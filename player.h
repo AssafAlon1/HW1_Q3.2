@@ -46,4 +46,11 @@ void playerDestroy(Player player);
  */
 ChessResult playerAddGame(Player player, Game game);
 
+
+
+
+// GetFinishedGamesAVGTime
+
+// CalculateLevel
+
 #endif

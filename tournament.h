@@ -100,4 +100,15 @@ ChessResult tournamentRemovePlayer(Tournament tournament, int player_id);
 ChessResult tournamentEnd (Tournament tournament);
 
 
+
+//int tournamentCalculateWinner (Tournament tournament)
+
+// GetSizePlayers
+
+// GetSizeGames
+
+// UpdatePlayerInTournmnt
+
+// UpdateStatistics
+
 #endif

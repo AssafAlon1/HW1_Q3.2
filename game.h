@@ -15,7 +15,7 @@ typedef struct game_t *Game;
  * @return A new game in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-Game gameCreate(int first_player, int second_player, Winner winner, int play_time);
+Game gameCreate(int tournament_id, int first_player, int second_player, Winner winner, int play_time);
 
 
 
@@ -28,5 +28,19 @@ Game gameCreate(int first_player, int second_player, Winner winner, int play_tim
  */
 void gameDestroy(Game game);
 
+
+// Copy
+
+// Free
+
+// RemovePlayer
+
+// GetWinner
+
+// GetFirstPlayer
+
+// GetSecondPlayer
+
+// GetPlayTime
 
 #endif
