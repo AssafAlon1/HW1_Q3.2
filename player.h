@@ -36,6 +36,16 @@ void playerDestroy(Player player);
 
 
 /**
+ * playerCopy: copies a new player.
+ *
+ * @param player - the player
+ * @return The coppied player in case of success, and NULL otherwise (e.g.
+ *     in case of an allocation error)
+ */
+Player playerCopy(Player player);
+
+
+/**
  * playerAddGame: register a game that the player has played
  *
  * @param player - the player that has played said game
@@ -48,9 +58,25 @@ ChessResult playerAddGame(Player player, Game game);
 
 
 
+/**
+ * playerGetFinishedGamesAverageTime: Returns the average time
+ * of a game the player has played
+ *
+ * @param player - the player id
+ * @return
+ *      The average time of a game the player has played
+ */
+double playerGetFinishedGamesAverageTime(Player player);
 
-// GetFinishedGamesAVGTime
 
-// CalculateLevel
+
+/**
+ * playerGetLevel: Calculates and returns the level of a given player
+ *
+ * @param player - the player id
+ * @return
+ *      The level of said player
+ */
+double playerGetLevel(Player player);
 
 #endif

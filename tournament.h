@@ -2,6 +2,7 @@
 #define _TOURNAMENT_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "chessSystem.h"
 
 
@@ -40,6 +41,15 @@ Tournament tournamentCreate();
  */
 void tournamentDestroy(Tournament tournament);
 
+
+/**
+ * tournamentCopy: copies a given tournament
+ *
+ * @param tournament - the tournament to copy
+ * @return
+ *     The coppied tournament
+ * /
+Tournament tournamentCopy(Tournament tournament);
 
 
 /**
@@ -101,14 +111,63 @@ ChessResult tournamentEnd (Tournament tournament);
 
 
 
-//int tournamentCalculateWinner (Tournament tournament)
+/**
+ * tournamentCalculateWinner: The function will calculate the winner of the tournament
+ *                            and update the Winner attribute
+ *
+ * @param tournament - the tournament id. Must be non-negative, and unique.
+ *
+ * @return
+ *     true - if there's a valid winner.
+ *     false - if there's no valid winner / an error has occoured.
+ */
+bool tournamentCalculateWinner (Tournament tournament);
 
-// GetSizePlayers
 
-// GetSizeGames
+/**
+ * tournamentGetSizePlayers: The function will return the number of unique players
+ *                  in a given tournament
+ *
+ * @param tournament - the tournament id. Must be non-negative, and unique.
+ *
+ * @return
+ *     The number of unique players in the tournament
+ */
+int tournamentGetSizePlayers (Tournament tournament);
 
-// UpdatePlayerInTournmnt
 
-// UpdateStatistics
+
+/**
+ * tournamentGetSizeGames: The function will return the number of unique games
+ *                  in a given tournament
+ *
+ * @param tournament - the tournament id. Must be non-negative, and unique.
+ *
+ * @return
+ *     The number of unique games in the tournament
+ */
+int tournamentGetSizeGames (Tournament tournament);
+
+
+/**
+ * tournamentUpdatePlayerInTournmnt: ???????
+ *
+ * @param tournament - the tournament id. Must be non-negative, and unique.
+ *
+ * @return
+ *     ?????
+ */
+void tournamentUpdatePlayerStatsInTournmnt (Tournament tournament);
+
+
+/**
+ * tournamentUpdateStatistics: ???????
+ *
+ * @param tournament - the tournament id. Must be non-negative, and unique.
+ *
+ * @return
+ *     ?????
+ */
+void tournamentUpdateStatistics (Tournament tournament);
 
 #endif
