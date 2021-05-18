@@ -2,6 +2,7 @@
 #define _GAME_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "chessSystem.h"
 
 

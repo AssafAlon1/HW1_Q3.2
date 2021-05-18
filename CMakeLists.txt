@@ -22,5 +22,5 @@ set(CMAKE_C_FLAGS ${MTM_FLAGS_DEBUG})
 # If we were compiling multiple files, we could add them separated by spaces,
 # eg add_executable(my_executable hey.c ho.c its.c me.c)
 link_directories(.)
-add_executable(chess main.c chessSystem.c)
+add_executable(chess main.c chessSystem.c tournament.c player.c game.c playerInTournament.c)
 target_link_libraries(chess libmap.a)

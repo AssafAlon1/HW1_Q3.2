@@ -26,10 +26,14 @@ typedef struct tournament_t *Tournament;
 /**
  * tournamentCreate: create an empty tournament.
  *
+ * @param tournament_id - the tournament id
+ * @param max_games_per_player - the maximum games allowed per player
+ * @param tournament_location - the tournament location
+ * 
  * @return A new tournament in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-Tournament tournamentCreate();
+Tournament tournamentCreate(int tournament_id, int max_games_per_player, const char *tournament_location);
 
 
 /**
@@ -48,7 +52,7 @@ void tournamentDestroy(Tournament tournament);
  * @param tournament - the tournament to copy
  * @return
  *     The coppied tournament
- * /
+ */
 Tournament tournamentCopy(Tournament tournament);
 
 
@@ -71,9 +75,6 @@ Tournament tournamentCopy(Tournament tournament);
  */
 ChessResult tournamentAddGame(Tournament tournament, int first_player,
                          int second_player, Winner winner, int play_time);
-
-
-
 
 
 
