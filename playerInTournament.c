@@ -1,8 +1,8 @@
 #include <stdio.h>
+#include "map.h"
 #include "chessSystem.h"
 #include "playerInTournament.h"
 #include "game.h"
-#include "map.h"
 #include "mapUtil.h"
 
 struct player_in_tournament_t {
@@ -53,7 +53,7 @@ PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id)
 
 int playerInTournamentGetWins (PlayerInTournament player_in_tournament)
 {
-    player_in_tournament->wins;
+    return player_in_tournament->wins;
 }
 
 int playerInTournamentGetDraws (PlayerInTournament player_in_tournament)

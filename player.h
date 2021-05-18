@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "chessSystem.h"
+#include "game.h"
 
 // typedef enum {
 //     PLAYER_OUT_OF_MEMORY,
