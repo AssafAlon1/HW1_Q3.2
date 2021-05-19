@@ -1,6 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#define INVALID_PLAYER -1
+
 #include <stdio.h>
 #include "chessSystem.h"
 #include "game.h"

@@ -17,7 +17,7 @@ typedef struct player_in_tournament_t *PlayerInTournament;
  * @return A new PlayerInTournament in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id);
+PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player);
 
 
 /**
