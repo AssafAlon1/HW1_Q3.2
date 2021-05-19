@@ -1,7 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
-#define INVALID_GAME_ID 0
+#define INVALID_GAME_ID -1
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -9,7 +9,6 @@
 
 
 typedef struct game_t *Game;
-
 
 
 /**
@@ -67,15 +66,25 @@ ChessResult gameRemovePlayer(Game game, int player_id);
 
 
 /**
- * gameGetWinner: Get the winner of a given game
+ * gameGetIdOfWinner: Get the id of the winner of a given game
  *
  * @param game - the game that should return it's winner
  * 
  * @return
  *     The winner of the game
  */
-Winner gameGetWinner(Game game);
+int gameGetIdOfWinner(Game game);
 
+
+/**
+ * gameGetID: Get the ID of a given game
+ *
+ * @param game - the game
+ * 
+ * @return
+ *     The ID of the game
+ */
+int gameGetID(Game game);
 
 
 /**

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "playerintournament.h": "c"
+        "playerintournament.h": "c",
+        "player.h": "c"
     }
 }

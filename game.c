@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "game.h"
 #include "player.h"
 
@@ -26,6 +27,8 @@ Game gameCreate(int tournament_id, int first_player, int second_player, Winner w
     game->second_player = second_player;
     game->play_time     = play_time;
     game->winner        = winner;
+
+    return game;
 }
 
 
@@ -44,7 +47,8 @@ Game gameCopy(Game game)
 
     Game new_game = gameCreate(game->tournament_id, game->first_player, game->second_player,
                                game->winner, game->play_time, game->game_id);
-    return game;
+    
+    return new_game;
 }
 
 
@@ -61,34 +65,49 @@ ChessResult gameRemovePlayer(Game game, int player_id)
     }
 
     // Locate the player to remove and update values accordingly
-    int *player_to_remove = NULL;
-    int *other_player = NULL;
-    if (game->first_player == player_id)
+    if (player_id == game->first_player)
     {
-        player_to_remove = &(game->first_player);
-        other_player     = &(game->second_player);
+        game->first_player = DELETED_PLAYER;
+        game->winner       = SECOND_PLAYER;
     }
     else
     {
-        player_to_remove = &(game->second_player);
-        other_player     = &(game->first_player);
-    }
-
-    *player_to_remove == INVALID_PLAYER;
-    if (game->winner == player_id)
-    {
-        game->winner = *other_player;
+        game->second_player = DELETED_PLAYER;
+        game -> winner      = FIRST_PLAYER;
     }
 
     return CHESS_SUCCESS;
 }
 
-
-Winner gameGetWinner(Game game)
+int gameGetIdOfWinner(Game game)
 {
-    return game->winner;
+    if (game == NULL)
+    {
+        return -1;
+    }
+
+    if (game->winner == FIRST_PLAYER)
+    {
+        return game->first_player;
+    }
+
+    if (game->winner == SECOND_PLAYER)
+    {
+        return game->second_player;
+    }
+
+    return INVALID_PLAYER;
 }
 
+
+int gameGetID(Game game)
+{
+    if (game == NULL)
+    {
+        return INVALID_GAME_ID;
+    }
+    return game->game_id;
+}
 
 int gameGetPlayTime(Game game)
 {

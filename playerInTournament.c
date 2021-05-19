@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "map.h"
 #include "chessSystem.h"
 #include "playerInTournament.h"
+#include "player.h"
 #include "game.h"
 #include "mapUtil.h"
 
@@ -14,7 +16,7 @@ struct player_in_tournament_t {
     int draws;
     int losses;
     int total_game_time;
-};
+}; 
 
 
 
@@ -89,13 +91,52 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
 }
 
 
-/*ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game)
+// verify not NULL, verify max games, Update win/loss/draw and total_time , add game_id
+ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game)
 {
-    //if ()
-    //
+    // Verify input not NULL
+    if (player_in_tournament == NULL || game == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+    
+    // Verify the player is in the game
+    if (!gameisPlayerInGame(game, player_in_tournament->player_id))
+    {
+        return CHESS_PLAYER_NOT_EXIST;
+    }
+
+    // Verify game count is valid
     int game_count = playerInTournamentGetTotalGames(player_in_tournament);
-    (player_in_tournament->game_ids)[game_count] = 
-}*/
+    if (game_count >= player_in_tournament->max_games_per_player)
+    {
+        return CHESS_INVALID_MAX_GAMES;
+    }
+
+    // Update play time, game count & wins / losses / draws 
+    (player_in_tournament->game_ids)[game_count] = gameGetID(game);
+    player_in_tournament->total_game_time += gameGetPlayTime(game);
+
+    int winner_id = gameGetIdOfWinner(game);
+    if (winner_id == player_in_tournament->player_id)
+    {
+        (player_in_tournament->wins)++;
+    }
+
+    else
+    {
+        if (winner_id == INVALID_PLAYER)
+        {
+            (player_in_tournament->draws)++;
+        }
+        else
+        {
+            (player_in_tournament->losses)++;
+        }
+    }
+
+    return CHESS_SUCCESS;
+}
 
 
 int playerInTournamentGetWins (PlayerInTournament player_in_tournament)
