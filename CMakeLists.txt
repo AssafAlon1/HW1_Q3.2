@@ -24,5 +24,5 @@ set(CMAKE_C_FLAGS ${MTM_FLAGS_DEBUG})
 
 # WHEN RELEASING, REMOVE THE MAP.C FROM THE ADD_EXECUTABLE AND UN-COMMENT THE LIBMAP LINES
 #link_directories(.)
-add_executable(chess main.c chessSystem.c tournament.c player.c game.c playerInTournament.c map.c mapUtil.c)
+add_executable(chess main.c chessSystem.c tournament.c game.c player.c playerInTournament.c map.c mapUtil.c)
 #target_link_libraries(chess libmap.a)

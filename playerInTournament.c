@@ -163,3 +163,4 @@ int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament)
 {
     return player_in_tournament->wins + player_in_tournament->draws + player_in_tournament->losses;
 }
+

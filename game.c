@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "game.h"
-#include "player.h"
 
 struct game_t {
     int tournament_id;
@@ -127,4 +126,9 @@ bool gameisPlayerInGame(Game game, int player_id)
         return true;
     }
     return false;
+}
+
+int gameGetTournamentID(Game game)
+{
+    return game->tournament_id;
 }

@@ -103,7 +103,9 @@ ChessResult playerAddGame(Player player, Game game)
     {
         return CHESS_PLAYER_NOT_EXIST; // PlayerResult?
     }
-    if (mapContains(player->player_in_tournaments, &(game->tournament_id)))
+
+    int tournament_id = gameGetTournamentID(game);
+    if (mapContains(player->player_in_tournaments, &tournament_id))
     {
         printf("continue here\n");
     }

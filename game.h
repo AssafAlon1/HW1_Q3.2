@@ -2,6 +2,8 @@
 #define _GAME_H
 
 #define INVALID_GAME_ID -1
+#define INVALID_PLAYER -1
+#define DELETED_PLAYER -2
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -109,7 +111,7 @@ int gameGetID(Game game);
 //int gameGetSecondPlayer(Game game);
 
 
-// gameGetPlayTime
+
 /**
  * GetPlayTime: Get the length of the game in seconds
  *
@@ -134,5 +136,16 @@ int gameGetPlayTime(Game game);
  */
 bool gameisPlayerInGame(Game game, int player_id);
 
+
+
+/**
+ * gameGetTournamentID: Get the tournament ID of the game
+ *
+ * @param game - the game that should return it's tournament ID
+ * 
+ * @return
+ *     the tournament ID of the game
+ */
+int gameGetTournamentID(Game game);
 
 #endif
