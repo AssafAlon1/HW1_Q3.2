@@ -60,11 +60,13 @@ Player playerCopy(Player player);
  *
  * @param player - the player that has played said game
  * @param game   - the game that the player has played
+ * @param max_games_per_player - the max games a player get play in the tournament
+ *                               in which the game was played
  * @return
  *      CHESS_NULL_ARGUMENT - if player is NULL or game is NULL
  *      CHESS_OUT_OF_MEMORY - if an allocation failed
  */
-ChessResult playerAddGame(Player player, Game game);
+ChessResult playerAddGame(Player player, Game game, int max_games_per_player);
 
 
 
@@ -100,3 +102,5 @@ double playerGetFinishedGamesAverageTime(Player player);
 double playerGetLevel(Player player);
 
 #endif
+
+

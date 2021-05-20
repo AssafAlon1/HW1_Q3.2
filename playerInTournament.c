@@ -19,6 +19,18 @@ struct player_in_tournament_t {
 }; 
 
 
+static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
+{
+    int game_count = playerInTournamentGetTotalGames(player_in_tournament);
+    for (int i = 0 ; i < game_count ; i++)
+    {
+        if((player_in_tournament->game_ids)[i] == game_id)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player)
 {
@@ -110,7 +122,13 @@ ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, G
     int game_count = playerInTournamentGetTotalGames(player_in_tournament);
     if (game_count >= player_in_tournament->max_games_per_player)
     {
-        return CHESS_INVALID_MAX_GAMES;
+        return CHESS_EXCEEDED_GAMES;
+    }
+
+    // Verify game ID is unique
+    if (isGameExists(player_in_tournament, gameGetID(game)))
+    {
+        return CHESS_GAME_ALREADY_EXISTS;
     }
 
     // Update play time, game count & wins / losses / draws 

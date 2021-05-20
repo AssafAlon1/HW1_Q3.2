@@ -50,7 +50,7 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
  *     CHESS_NULL_ARGUMENT - if player_in_tournament or game is NULL
        CHESS_GAME_ALREADY_EXISTS - if there's already a game with the same opponent
        CHESS_EXCEEDED_GAMES - if the player has reached his max allowed games in the tournament
-       CHESS_TOURNAMENT_ENDED - if the tournament has already ended
+       CHESS_PLAYER_NOT_EXIST - if the player is not one of the players in game
        CHESS_SUCCESS - if the action was performed successfully
  */
 ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game);
