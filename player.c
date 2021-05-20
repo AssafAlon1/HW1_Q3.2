@@ -92,7 +92,7 @@ Player playerCopy(Player player)
 }
 
 
-ChessResult playerAddGame(Player player, Game game)
+ChessResult playerAddGame(Player player, Game game, int max_games_per_player)
 {
     if (player == NULL || game == NULL)
     {
@@ -104,16 +104,34 @@ ChessResult playerAddGame(Player player, Game game)
         return CHESS_PLAYER_NOT_EXIST; // PlayerResult?
     }
 
+    // If the player has never played in the tournament tournament,
+    // create instance of playerInTournament for the specific tournament
     int tournament_id = gameGetTournamentID(game);
-    if (mapContains(player->player_in_tournaments, &tournament_id))
+    if (!mapContains(player->player_in_tournaments, &tournament_id))
     {
-        printf("continue here\n");
+        PlayerInTournament player_in_tournament = playerInTournamentCreate(
+                    player->player_id, tournament_id, max_games_per_player);
+        
+        if(player_in_tournament == NULL)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
+
+        // Put player in tournament map and verify success
+        MapResult put_result = mapPut(player->player_in_tournaments, &tournament_id, player_in_tournament);
+        if (put_result == MAP_OUT_OF_MEMORY)
+        {
+            playerInTournamentDestroy(player_in_tournament);
+            return CHESS_OUT_OF_MEMORY;
+        }
+
+        playerInTournamentDestroy(player_in_tournament); // A copy was sent to the map
     }
+    
+    ChessResult add_game_result = playerInTournamentAddGame(mapGet(
+                                player->player_in_tournaments, &tournament_id), game);
 
-    //playerInTournamentAddGame();
-
-    return CHESS_SUCCESS;
-
+    return add_game_result;
 }
 
 
