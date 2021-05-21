@@ -13,3 +13,12 @@ void gamePtrFree (void* pointer);
 void* playerInTournamentCopyWrapper(void *player_in_tournament);
 
 void playerInTournamentDestroyWrapper(void *player_in_tournament);
+
+void* gameCopyWrapper(void *game);
+
+void gameDestroyWrapper(void *game);
+
+
+Map createGamesMap();
+
+Map createPlayerInTournamentsMap();

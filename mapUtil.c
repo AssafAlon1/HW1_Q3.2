@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "map.h"
 #include "mapUtil.h"
 #include "game.h"
 #include "playerInTournament.h"
@@ -41,4 +42,31 @@ void* playerInTournamentCopyWrapper(void *player_in_tournament)
 void playerInTournamentDestroyWrapper(void *player_in_tournament)
 {
     playerInTournamentDestroy((PlayerInTournament)player_in_tournament);
+}
+
+void* gameCopyWrapper(void *game)
+{
+    return gameCopy((Game)game);
+}
+
+void gameDestroyWrapper(void *game)
+{
+    gameDestroy((Game)game);
+}
+
+
+
+Map createGamesMap()
+{
+    Map map = mapCreate(gameCopyWrapper, intCopy,
+                        gameDestroyWrapper, intFree, intCompare );
+    return map;
+}
+
+
+Map createPlayerInTournamentsMap()
+{
+    Map map = mapCreate(playerInTournamentCopyWrapper, intCopy,
+                        playerInTournamentDestroyWrapper, intFree, intCompare );
+    return map;
 }

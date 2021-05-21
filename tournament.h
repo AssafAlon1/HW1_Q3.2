@@ -1,6 +1,10 @@
 #ifndef _TOURNAMENT_H
 #define _TOURNAMENT_H
 
+#define TOURNAMENT_WIN_WEIGHT 2
+#define TOURNAMENT_DRAW_WEIGHT 1
+#define TOURNAMENT_LOSS_WEIGHT 0
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "chessSystem.h"
@@ -33,7 +37,8 @@ typedef struct tournament_t *Tournament;
  * @return A new tournament in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-Tournament tournamentCreate(int tournament_id, int max_games_per_player, const char *tournament_location);
+Tournament tournamentCreate(int tournament_id, int max_games_per_player,
+                            const char *tournament_location);
 
 
 /**
@@ -65,6 +70,7 @@ Tournament tournamentCopy(Tournament tournament);
  * @param winner - indicates the winner in the match. if it is FIRST_PLAYER, then the first player won.
  *                 if it is SECOND_PLAYER, then the second player won, otherwise the match has ended with a draw.
  * @param play_time - duration of the match in seconds. Must be non-negative.
+ * @param amount_of_new_players - 0/1/2 - the amount of players that this is their first game in the tournament
  * 
  * @return
  *     CHESS_NULL_ARGUMENT - if tournament is NULL.
@@ -73,8 +79,8 @@ Tournament tournamentCopy(Tournament tournament);
  *     CHESS_INVALID_PLAY_TIME - if the play time is negative.
  *     CHESS_SUCCESS - if game was added successfully.
  */
-ChessResult tournamentAddGame(Tournament tournament, int first_player,
-                         int second_player, Winner winner, int play_time);
+ChessResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
+                              Winner winner, int play_time, int amount_of_new_players);
 
 
 
@@ -85,6 +91,8 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player,
  *
  * @param tournament - The tournament that should remove specified player. Must be non-NULL.
  * @param player_id - the player id. Must be non-negative.
+ * @param game_ids  - array of game ids that the player has played in the tournament.
+ *                    array's size is max_games_per_player, none games are INVALID_GAME_ID
  *
  * @return
  *     CHESS_NULL_ARGUMENT - if tournament is NULL.
@@ -92,7 +100,7 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player,
  *     CHESS_PLAYER_NOT_EXIST - if the player does not play in the tournament.
  *     CHESS_SUCCESS - if player was removed successfully.
  */
-ChessResult tournamentRemovePlayer(Tournament tournament, int player_id);
+ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[]);
 
 
 
@@ -102,27 +110,26 @@ ChessResult tournamentRemovePlayer(Tournament tournament, int player_id);
  *                     Once the tournament is over, no games can be added for that tournament.
  *
  * @param tournament - the tournament id. Must be non-negative, and unique.
+ * @param winner_id  - the id of the winner in the tournament
  *
  * @return
  *     CHESS_NULL_ARGUMENT - if Tournament is NULL.
  *     CHESS_SUCCESS - if tournament was ended successfully.
  *     CHESS_TOURNAMENT_ENDED - if the tournament has already ended
  */
-ChessResult tournamentEnd (Tournament tournament);
+ChessResult tournamentEnd (Tournament tournament, int winner_id);
 
 
 
 /**
  * tournamentCalculateWinner: The function will calculate the winner of the tournament
- *                            and update the Winner attribute
  *
  * @param tournament - the tournament id. Must be non-negative, and unique.
  *
  * @return
- *     true - if there's a valid winner.
- *     false - if there's no valid winner / an error has occoured.
+ *     the id of the winner
  */
-bool tournamentCalculateWinner (Tournament tournament);
+int tournamentCalculateWinner (Tournament tournament);
 
 
 /**
@@ -150,25 +157,26 @@ int tournamentGetSizePlayers (Tournament tournament);
 int tournamentGetSizeGames (Tournament tournament);
 
 
-/**
- * tournamentUpdatePlayerInTournmnt: ???????
- *
- * @param tournament - the tournament id. Must be non-negative, and unique.
- *
- * @return
- *     ?????
- */
-void tournamentUpdatePlayerStatsInTournmnt (Tournament tournament);
+// /**
+//  * tournamentUpdatePlayerInTournmnt: ???????
+//  *
+//  * @param tournament - the tournament id. Must be non-negative, and unique.
+//  *
+//  * @return
+//  *     ?????
+//  */
+// void tournamentUpdatePlayerStatsInTournmnt (Tournament tournament);
 
 
-/**
- * tournamentUpdateStatistics: ???????
- *
- * @param tournament - the tournament id. Must be non-negative, and unique.
- *
- * @return
- *     ?????
- */
-void tournamentUpdateStatistics (Tournament tournament);
+// /**
+//  * tournamentUpdateStatistics: ???????
+//  *
+//  * @param tournament - the tournament id. Must be non-negative, and unique.
+//  *
+//  * @return
+//  *     ?????
+//  */
+// void tournamentUpdateStatistics (Tournament tournament);
 
 #endif
+

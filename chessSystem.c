@@ -6,10 +6,14 @@
 
 
 
-struct chess_system_t {
+// struct chess_system_t {
 
-} ;
+// } ;
 
+//static int ChessTournamentCalculateWinner (Tournament tournament)
+//{
+    //TOURNAMENT_WIN_WEIGHT
+//}
 
 //ChessSystem chessCreate()
 
@@ -23,7 +27,8 @@ struct chess_system_t {
 
 //ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
 //                         int second_player, Winner winner, int play_time)
-
+// CHECK IF GAME ALREADY EXISTS - STATIC HELPER FUNCTION
+// CHECK AMOUNT OF NEW PLAYERS
 
 //ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
 

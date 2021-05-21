@@ -17,12 +17,12 @@ struct player_t {
 };
 
 
-static Map createPlayerInTournamentsMap()
-{
-    Map map = mapCreate(playerInTournamentCopyWrapper, intCopy,
-                        playerInTournamentDestroyWrapper, intFree, intCompare );
-    return map;
-}
+// static Map createPlayerInTournamentsMap()
+// {
+//     Map map = mapCreate(playerInTournamentCopyWrapper, intCopy,
+//                         playerInTournamentDestroyWrapper, intFree, intCompare );
+//     return map;
+// }
 
 Player playerCreate(int player_id)
 {
