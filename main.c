@@ -219,6 +219,10 @@ void playerTests()
     gameDestroy(game7);
     gameDestroy(game8);
 
+    //assert(playerRemoveTournament(player1, 1) == PLAYER_SUCCESS);
+    //assert(playerGetTotalGames(player1) == 2700);
+    //playerGetFinishedGamesAverageTime(player1);
+    //playerGetLevel(player1);
 
     playerDestroy(player1);
     printf(" [OK]\n");
