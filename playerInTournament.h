@@ -4,6 +4,20 @@
 #include <stdio.h>
 #include "game.h"
 
+
+typedef enum {
+    PLAYER_IN_TOURNAMENT_OUT_OF_MEMORY,
+    PLAYER_IN_TOURNAMENT_NULL_ARGUMENT,
+    PLAYER_IN_TOURNAMENT_INVALID_ID,
+    PLAYER_IN_TOURNAMENT_INVALID_MAX_GAMES,
+    PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS,
+    PLAYER_IN_TOURNAMENT_EXCEEDED_GAMES,
+    PLAYER_IN_TOURNAMENT_PLAYER_NOT_IN_GAME,
+    PLAYER_IN_TOURNAMENT_CONFLICT_ID,
+    PLAYER_IN_TOURNAMENT_SUCCESS
+} PlayerInTournamentResult ;
+
+
 /** Type for representing a player's games in a specific tournament */
 typedef struct player_in_tournament_t *PlayerInTournament;
 
@@ -47,13 +61,13 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
  * @param game - the game that the player has played in the tournament
  * @return
  *     The coppied player in tournament
- *     CHESS_NULL_ARGUMENT - if player_in_tournament or game is NULL
-       CHESS_GAME_ALREADY_EXISTS - if there's already a game with the same opponent
-       CHESS_EXCEEDED_GAMES - if the player has reached his max allowed games in the tournament
-       CHESS_PLAYER_NOT_EXIST - if the player is not one of the players in game
-       CHESS_SUCCESS - if the action was performed successfully
+ *     PLAYER_IN_TOURNAMENT_NULL_ARGUMENT - if player_in_tournament or game is NULL
+       PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS - if there's already a game with the same opponent
+       PLAYER_IN_TOURNAMENT_EXCEEDED_GAMES - if the player has reached his max allowed games in the tournament
+       PLAYER_IN_TOURNAMENT_PLAYER_NOT_IN_GAME - if the player is not one of the players in game
+       PLAYER_IN_TOURNAMENT_SUCCESS - if the action was performed successfully
  */
-ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game);
+PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game);
 
 
 

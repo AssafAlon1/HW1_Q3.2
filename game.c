@@ -14,7 +14,7 @@ struct game_t {
 
 Game gameCreate(int tournament_id, int first_player, int second_player, Winner winner, int play_time, int game_id)
 {
-    Game game = malloc(sizeof(game));
+    Game game = malloc(sizeof(*game));
     if (game == NULL)
     {
         return NULL;

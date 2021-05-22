@@ -19,6 +19,8 @@ struct player_in_tournament_t {
 }; 
 
 
+//================== INTERNAL FUNCTIONS START ==================//
+
 static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
 {
     int game_count = playerInTournamentGetTotalGames(player_in_tournament);
@@ -31,6 +33,47 @@ static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
     }
     return false;
 }
+
+
+static PlayerInTournamentResult playerInTournamentAddGameInputVerification(PlayerInTournament player_in_tournament, Game game)
+{
+    // Verify input not NULL
+    if (player_in_tournament == NULL || game == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_NULL_ARGUMENT;
+    }
+    
+    // Verify the player is in the game
+    if (!gameisPlayerInGame(game, player_in_tournament->player_id))
+    {
+        return PLAYER_IN_TOURNAMENT_PLAYER_NOT_IN_GAME;
+    }
+
+    // Verify game ID is unique
+    if (isGameExists(player_in_tournament, gameGetID(game)))
+    {
+        return PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS;          // SHOULD ALSO VERIFY OPPONENTS NEVER PLAYED EACH OTHER?
+    }
+
+    // Verify game count is valid
+    int game_count = playerInTournamentGetTotalGames(player_in_tournament);
+    if (game_count >= player_in_tournament->max_games_per_player)
+    {
+        return PLAYER_IN_TOURNAMENT_EXCEEDED_GAMES;
+    }
+
+    // Verify game and player belong to the same tournament
+    if (player_in_tournament->tournament_id != gameGetTournamentID(game))
+    {
+        return PLAYER_IN_TOURNAMENT_CONFLICT_ID;
+    }
+
+    return PLAYER_IN_TOURNAMENT_SUCCESS;
+}
+
+
+//================== INTERNAL FUNCTIONS END ==================//
+
 
 PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player)
 {
@@ -101,35 +144,17 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
 }
 
 
-// verify not NULL, verify max games, Update win/loss/draw and total_time , add game_id
-ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game)
+PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, Game game)
 {
-    // Verify input not NULL
-    if (player_in_tournament == NULL || game == NULL)
+    // Input verification through helper function
+    PlayerInTournamentResult verification_result = playerInTournamentAddGameInputVerification(player_in_tournament, game);
+    if (verification_result != PLAYER_IN_TOURNAMENT_SUCCESS)
     {
-        return CHESS_NULL_ARGUMENT;
-    }
-    
-    // Verify the player is in the game
-    if (!gameisPlayerInGame(game, player_in_tournament->player_id))
-    {
-        return CHESS_PLAYER_NOT_EXIST;
-    }
-
-    // Verify game count is valid
-    int game_count = playerInTournamentGetTotalGames(player_in_tournament);
-    if (game_count >= player_in_tournament->max_games_per_player)
-    {
-        return CHESS_EXCEEDED_GAMES;
-    }
-
-    // Verify game ID is unique
-    if (isGameExists(player_in_tournament, gameGetID(game)))
-    {
-        return CHESS_GAME_ALREADY_EXISTS;
+        return verification_result;
     }
 
     // Update play time, game count & wins / losses / draws 
+    int game_count = playerInTournamentGetTotalGames(player_in_tournament);
     (player_in_tournament->game_ids)[game_count] = gameGetID(game);
     player_in_tournament->total_game_time += gameGetPlayTime(game);
 
@@ -151,7 +176,7 @@ ChessResult playerInTournamentAddGame(PlayerInTournament player_in_tournament, G
         }
     }
 
-    return CHESS_SUCCESS;
+    return PLAYER_IN_TOURNAMENT_SUCCESS;
 }
 
 

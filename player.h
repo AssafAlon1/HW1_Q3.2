@@ -12,12 +12,17 @@
 #include "chessSystem.h"
 #include "game.h"
 
-// typedef enum {
-//     PLAYER_OUT_OF_MEMORY,
-//     PLAYER_NULL_ARGUMENT,
-//     PLAYER_INVALID_ID,
-//     PLAYER_SUCCESS
-// } PlayerResult ;
+typedef enum {
+    PLAYER_OUT_OF_MEMORY,
+    PLAYER_NULL_ARGUMENT,
+    PLAYER_INVALID_ID,
+    PLAYER_TOURNAMENT_NOT_EXIST,
+    PLAYER_NOT_IN_GAME,
+    PLAYER_GAME_ALREADY_EXISTS,
+    PLAYER_EXCEEDED_GAMES,
+    PLAYER_GENERAL_ERROR,
+    PLAYER_SUCCESS
+} PlayerResult ;
 
 
 typedef struct player_t *Player;
@@ -63,10 +68,11 @@ Player playerCopy(Player player);
  * @param max_games_per_player - the max games a player get play in the tournament
  *                               in which the game was played
  * @return
- *      CHESS_NULL_ARGUMENT - if player is NULL or game is NULL
- *      CHESS_OUT_OF_MEMORY - if an allocation failed
+ *      PLAYER_NULL_ARGUMENT - if player is NULL or game is NULL
+ *      PLAYER_OUT_OF_MEMORY - if an allocation failed
+ *      PLAYER_SUCCESS       - in the case of success
  */
-ChessResult playerAddGame(Player player, Game game, int max_games_per_player);
+PlayerResult playerAddGame(Player player, Game game, int max_games_per_player);
 
 
 
@@ -100,6 +106,19 @@ double playerGetFinishedGamesAverageTime(Player player);
  *      The level of said player
  */
 double playerGetLevel(Player player);
+
+
+/**
+ * playerRemoveTournament: Removes tournament records from player and update statistics
+ *
+ * @param player - the player
+ * @param tournament_id - the id of the tournament to remove
+ * @return
+ *      PLAYER_NULL_ARGUMENT - if player is NULL
+ *      PLAYER_TOURNAMENT_NOT_EXIST - if the player never played in the tournament
+ *      PLAYER_SUCCESS - in the case of success
+ */
+PlayerResult playerRemoveTournament(Player player, int tournament_id);
 
 #endif
 
