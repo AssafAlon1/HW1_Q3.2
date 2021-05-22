@@ -34,14 +34,13 @@ static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
 
 PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player)
 {
-    PlayerInTournament player_in_tournament = malloc(sizeof(player_in_tournament));
-    
+    PlayerInTournament player_in_tournament = malloc(sizeof(*player_in_tournament));
     // Check if the player in tournament allocation failed
     if (player_in_tournament == NULL)
     {
         return NULL;
     }
-
+    player_in_tournament->game_ids = NULL;
     player_in_tournament->player_id = player_id;
     player_in_tournament->tournament_id = tournament_id;
     player_in_tournament->max_games_per_player = max_games_per_player;
@@ -50,7 +49,6 @@ PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, in
     player_in_tournament->losses = 0;
     player_in_tournament->total_game_time = 0;
     player_in_tournament->game_ids = malloc(max_games_per_player*sizeof(int));
-
     // If the allocation failed
     if (player_in_tournament->game_ids == NULL)
     {

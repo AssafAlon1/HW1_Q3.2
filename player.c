@@ -142,18 +142,39 @@ int playerGetTotalGames(Player player)
 
 double playerGetFinishedGamesAverageTime(Player player)
 {
-    int amountOfGames = playerGetTotalGames(player);
-    double time = (double)(player->total_game_time)/amountOfGames;
+    if (player == NULL)
+    {
+        return -1;
+    }
+
+    int amount_of_games = playerGetTotalGames(player);
+    if (amount_of_games == 0)
+    {
+        return 0;
+    }
+
+    double time = (double)(player->total_game_time) / amount_of_games;
     return time;
 }
 
 
 double playerGetLevel(Player player)
 {
+    if (player == NULL)
+    {
+        return -1;
+    }
+
+    int amount_of_games = playerGetTotalGames(player);
+    if (amount_of_games == 0)
+    {
+        return 0;
+    }
+
     double level = (player->total_wins)*WIN_WEIGHT;
     level       -= (player->total_losses)*LOSS_WEIGHT;
     level       += (player->total_draws)*DRAW_WEIGHT;
-    level       /=  playerGetTotalGames(player);
+    level       /= amount_of_games;
 
     return level;
 }

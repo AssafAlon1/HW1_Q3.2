@@ -74,7 +74,6 @@ ChessResult gameRemovePlayer(Game game, int player_id)
         game->second_player = DELETED_PLAYER;
         game -> winner      = FIRST_PLAYER;
     }
-
     return CHESS_SUCCESS;
 }
 
