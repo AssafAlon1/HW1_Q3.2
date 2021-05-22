@@ -17,6 +17,8 @@ struct player_t {
 };
 
 
+//================== INTERNAL FUNCTIONS START ==================//
+
 // static Map createPlayerInTournamentsMap()
 // {
 //     Map map = mapCreate(playerInTournamentCopyWrapper, intCopy,
@@ -77,6 +79,10 @@ static PlayerResult playerNewTournament(Player player, int tournament_id, int ma
     return PLAYER_SUCCESS;
 }
 
+//================== INTERNAL FUNCTIONS END ==================//
+
+
+
 
 
 Player playerCreate(int player_id)
@@ -131,17 +137,17 @@ Player playerCopy(Player player)
         return NULL;
     }
 
-    new_player->player_in_tournaments = createPlayerInTournamentsMap();
+    new_player->player_in_tournaments = mapCopy(player->player_in_tournaments);
     if (new_player->player_in_tournaments == NULL)
     {
         free(new_player);
         return NULL;
     }
 
-    new_player->total_wins      = 0;
-    new_player->total_draws     = 0;
-    new_player->total_losses    = 0;
-    new_player->total_game_time = 0;
+    new_player->total_wins      = player->total_wins;
+    new_player->total_draws     = player->total_draws;
+    new_player->total_losses    = player->total_losses;
+    new_player->total_game_time = player->total_game_time;
 
     return new_player;
 }
@@ -203,6 +209,10 @@ PlayerResult playerAddGame(Player player, Game game, int max_games_per_player)
 
 int playerGetTotalGames(Player player)
 {
+    if (player == NULL)
+    {
+        return -1;
+    }
     return player->total_wins + player->total_losses + player->total_draws;
 }
 
@@ -269,7 +279,7 @@ PlayerResult playerRemoveTournament(Player player, int tournament_id)
     
     // Cleanup
     MapResult remove_result = mapRemove(player->player_in_tournaments, &tournament_id);
-    playerInTournamentDestroy(player_in_tournament);
+    player_in_tournament    = NULL;
 
     if (remove_result != MAP_SUCCESS)
     {

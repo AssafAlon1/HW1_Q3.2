@@ -21,6 +21,9 @@ struct tournament_t {
     int amount_of_players;
 };
 
+
+//================== INTERNAL FUNCTIONS START ==================//
+
 // static Map createGamesMap()
 // {
 //     Map map = mapCreate(gameCopyWrapper, intCopy,
@@ -94,11 +97,16 @@ static char* copyLocation (const char *location)
     return new_location;
 }
 
+//================== INTERNAL FUNCTIONS END ==================//
+
+
+
+
 
 Tournament tournamentCreate(int tournament_id, int max_games_per_player,
                             const char *tournament_location)
 {
-    Tournament tournament = malloc(sizeof(tournament));
+    Tournament tournament = malloc(sizeof(*tournament));
 
     //check if the tournament allocation failed 
     if (tournament == NULL)
@@ -190,7 +198,7 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player, int secon
         return CHESS_NULL_ARGUMENT;
     }
     
-    if (first_player <= 0 || second_player <= 0)
+    if (first_player <= 0 || second_player <= 0 || first_player == second_player)
     {
         return CHESS_INVALID_ID;
     }
@@ -345,13 +353,14 @@ bool tournamentValidateLocation(const char *location)
 
     // Verify the rest of the letters are lowercased/spaces
     location++;
-    while (location)
+    while (*location)
     {
         // If current char is not a lowercased one and not a space, the char is invalid
         if (!isLower(location) && !isSpace(location))
         {
             return false;
         }
+        location++;
     }
     return true;
 }

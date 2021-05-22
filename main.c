@@ -6,7 +6,7 @@
 #include "game.h"
 #include "playerInTournament.h"
 #include "assert.h"
-
+#include "string.h"
 
 #define eps 0.0001
 
@@ -219,20 +219,118 @@ void playerTests()
     gameDestroy(game7);
     gameDestroy(game8);
 
-    printf("1");
     assert(playerRemoveTournament(player1, 1) == PLAYER_SUCCESS);
-    printf("2");
-    assert(playerGetTotalGames(player1) == 2700);
-    printf("3");
+    assert(playerGetTotalGames(player1) == 3);
     assert(my_abs(playerGetFinishedGamesAverageTime(player1) - 900) < eps);
-    printf("4");
-    assert(my_abs(playerGetLevel(player1) - (-2)) < eps);
-    printf("5");
-    
+    assert(my_abs(playerGetLevel(player1) - (-10)) < eps);
+
     playerDestroy(player1);
     printf(" [OK]\n");
 
-    //printf(">>PLAYER Running basic tests player1...");
+
+    printf(">>PLAYER Running extra tests player2...");
+
+    Player player2 = playerCreate(1002);
+    Game game11 = gameCreate(1, 1001, 1002, FIRST_PLAYER, 300, 101);
+    Game game12 = gameCreate(1, 1003, 1001, DRAW, 600, 102);
+    assert(game1 != NULL && game2 != NULL);
+    assert(playerAddGame(player1, game11, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game12, 3) == PLAYER_NOT_IN_GAME);
+    gameDestroy(game11);
+    gameDestroy(game12);
+
+    Player player3 = playerCopy(player2);
+    assert(player3 != NULL);
+    assert(playerGetTotalGames(player3) == 1);
+    assert(my_abs(playerGetFinishedGamesAverageTime(player3) - 300) < eps);
+    assert(my_abs(playerGetLevel(player3) - (-10)) < eps);
+
+    Game game13 = gameCreate(1, 1002, 1003, FIRST_PLAYER, 700, 103);
+    assert(game13 != NULL);
+    assert(playerAddGame(player2, game13, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerGetTotalGames(player3) == 1);
+    assert(playerGetTotalGames(player2) == 2);
+    assert(my_abs(playerGetLevel(player2) - (-2)) < eps);
+    assert(playerAddGame(player3, game13, 2) == PLAYER_SUCCESS);
+    gameDestroy(game13);
+
+    Game game14 = gameCreate(1, 1002, 1004, FIRST_PLAYER, 500, 104);
+    Game game15 = gameCreate(1, 1002, 1005, FIRST_PLAYER, 346, 105);
+    assert(game14 != NULL && game15 != NULL);
+    assert(playerAddGame(player2, game14, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player2, game14, 3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game15, 3) == PLAYER_EXCEEDED_GAMES);
+    assert(playerAddGame(player3, game15, 3) == PLAYER_SUCCESS);
+    gameDestroy(game14);
+    gameDestroy(game15);
+    assert(playerGetTotalGames(player3) == 3);
+    assert(playerGetTotalGames(player2) == 3);
+    playerDestroy(player3);
+    assert(my_abs(playerGetLevel(player2) - ((double)2/3)) < eps);
+    assert(my_abs(playerGetFinishedGamesAverageTime(player2) - 500) < eps);
+    
+    playerDestroy(player2);
+    printf(" [OK]\n");
+}
+
+void tournamentTests()
+{
+    printf(">>TRNMNT Running basic tests tour1...");
+    Tournament tour1 = tournamentCreate(1, 3, "Russia");
+    assert(tour1 != NULL);
+    
+    assert(tournamentGetAverageGameTime(tour1) == 0);
+    assert(tournamentGetLongestGameTime(tour1) == 0);
+    assert(tournamentGetSizeGames(tour1) == 0);
+    assert(tournamentGetSizePlayers(tour1) == 0);
+    assert(tournamentGetWinner(tour1) == INVALID_PLAYER);
+    assert(strcmp(tournamentGetLocation(tour1), "Russia") == 0);
+
+    assert(tournamentAddGame(tour1, 1001, 1002, FIRST_PLAYER, 300, 2) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour1, 1001, 1003, FIRST_PLAYER, 303, 1) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour1, 1002, 1003, DRAW,         300, 0) == CHESS_SUCCESS);
+    assert(my_abs(tournamentGetAverageGameTime(tour1) - 301) < eps);
+    assert(tournamentGetLongestGameTime(tour1) == 303);
+    assert(tournamentGetSizeGames(tour1) == 3);
+    assert(tournamentGetSizePlayers(tour1) == 3);
+    assert(tournamentGetWinner(tour1) == INVALID_PLAYER);
+    tournamentEnd(tour1, 1001);
+    assert(tournamentGetWinner(tour1) == 1001);
+
+    tournamentDestroy(tour1);
+    printf("   [OK]\n");
+
+
+
+    printf(">>TRNMNT Running extra tests tour2...");
+    Tournament tour2 = tournamentCreate(2, 3, "Israel");
+    assert(tour2 != NULL);
+    assert(tournamentAddGame(tour2, 1001, 1002, FIRST_PLAYER, 1000, 2) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1001, 1003, FIRST_PLAYER, 900, 1) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1002, 1003, DRAW,         800, 0) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1001, FIRST_PLAYER, 700, 1) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1002, FIRST_PLAYER, 600, 0) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1003, FIRST_PLAYER, 500, 0) == CHESS_SUCCESS);
+
+    assert(my_abs(tournamentGetAverageGameTime(tour2) - 750) < eps);
+    assert(tournamentGetLongestGameTime(tour2) == 1000);
+    assert(tournamentGetSizeGames(tour2) == 6);
+    assert(tournamentGetSizePlayers(tour2) == 4);
+
+    assert(tournamentAddGame(tour2, 1004, 1004, FIRST_PLAYER, 500, 1) == CHESS_INVALID_ID);
+    assert(my_abs(tournamentGetAverageGameTime(tour2) - 750) < eps);
+    assert(tournamentGetLongestGameTime(tour2) == 1000);
+    assert(tournamentGetSizeGames(tour2) == 6);
+    assert(tournamentGetSizePlayers(tour2) == 4);
+    
+    tournamentEnd(tour2, 1004);
+    assert(tournamentGetWinner(tour1) == 1004);
+    tournamentDestroy(tour2);
+    printf("   [OK]\n");
+
 
 }
 
@@ -241,5 +339,6 @@ int main ()
     gameTests();
     playerInTournamentTests();
     playerTests();
+    tournamentTests();
     return 0;
 }

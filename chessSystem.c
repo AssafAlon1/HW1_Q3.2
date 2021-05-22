@@ -14,6 +14,18 @@ struct chess_system_t {
 };
 
 
+//================== INTERNAL FUNCTIONS START ==================//
+
+// static bool isPlayerPlayingInTournament(Player player, Tournament tournament)
+// {
+//     return true; // TODO
+// }
+
+
+
+
+//================== INTERNAL FUNCTIONS END ==================//
+
 
 ChessSystem chessCreate()
 {
@@ -106,7 +118,7 @@ ChessResult chessAddTournament (ChessSystem chess, int tournament_id,
 //ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
 //                         int second_player, Winner winner, int play_time)
 // CHECK IF GAME ALREADY EXISTS - STATIC HELPER FUNCTION
-// CHECK AMOUNT OF NEW PLAYERS
+// CHECK AMOUNT OF NEW PLAYERS WITH isPlayerPlayingInTournament
 
 //ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
 
