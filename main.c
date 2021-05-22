@@ -194,7 +194,7 @@ void playerTests()
     assert(my_abs(playerGetLevel(player1) - 4) < eps);
 
     Game game3 = gameCreate(1, 1001, 1004, SECOND_PLAYER, 900, 103);
-    Game game4 = gameCreate(2, 1001, 1004, SECOND_PLAYER, 900, 103);
+    Game game4 = gameCreate(2, 1001, 1004, SECOND_PLAYER, 900, 103); ////
     assert(game3 != NULL && game4 != NULL);
     assert(playerAddGame(player1, game3, 3) == PLAYER_SUCCESS);
     assert(playerAddGame(player1, game3, 3) == PLAYER_GAME_ALREADY_EXISTS);
@@ -205,8 +205,8 @@ void playerTests()
     assert(my_abs(playerGetFinishedGamesAverageTime(player1) - 675) < eps);
     assert(my_abs(playerGetLevel(player1) - (-3)) < eps);
 
-    Game game5 = gameCreate(2, 1001, 1005, SECOND_PLAYER, 900, 104);
-    Game game6 = gameCreate(2, 1001, 1006, SECOND_PLAYER, 900, 105);
+    Game game5 = gameCreate(2, 1001, 1005, SECOND_PLAYER, 900, 104); ////
+    Game game6 = gameCreate(2, 1001, 1006, SECOND_PLAYER, 900, 105); ////
     Game game7 = gameCreate(2, 1001, 1007, SECOND_PLAYER, 900, 106);
     Game game8 = gameCreate(1, 1001, 1007, FIRST_PLAYER, 900, 120);
     assert (game5 != NULL && game6 != NULL && game7 != NULL && game8 != NULL);
@@ -219,11 +219,16 @@ void playerTests()
     gameDestroy(game7);
     gameDestroy(game8);
 
-    //assert(playerRemoveTournament(player1, 1) == PLAYER_SUCCESS);
-    //assert(playerGetTotalGames(player1) == 2700);
-    //playerGetFinishedGamesAverageTime(player1);
-    //playerGetLevel(player1);
-
+    printf("1");
+    assert(playerRemoveTournament(player1, 1) == PLAYER_SUCCESS);
+    printf("2");
+    assert(playerGetTotalGames(player1) == 2700);
+    printf("3");
+    assert(my_abs(playerGetFinishedGamesAverageTime(player1) - 900) < eps);
+    printf("4");
+    assert(my_abs(playerGetLevel(player1) - (-2)) < eps);
+    printf("5");
+    
     playerDestroy(player1);
     printf(" [OK]\n");
 

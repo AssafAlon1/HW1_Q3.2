@@ -4,6 +4,8 @@
 #include "mapUtil.h"
 #include "game.h"
 #include "playerInTournament.h"
+#include "player.h"
+#include "tournament.h"
 
 void* intCopy (void *num)
 {
@@ -54,6 +56,25 @@ void gameDestroyWrapper(void *game)
     gameDestroy((Game)game);
 }
 
+void* playerCopyWrapper(void *player)
+{
+    return playerCopy((Player)player);
+}
+
+void playerDestroyWrapper(void *player)
+{
+    playerDestroy((Player)player);
+}
+
+void* tournamentCopyWrapper(void *tournament)
+{
+    return tournamentCopy((Tournament)tournament);
+}
+
+void tournamentDestroyWrapper(void *tournament)
+{
+    tournamentDestroy((Tournament)tournament);
+}
 
 
 Map createGamesMap()
@@ -68,5 +89,21 @@ Map createPlayerInTournamentsMap()
 {
     Map map = mapCreate(playerInTournamentCopyWrapper, intCopy,
                         playerInTournamentDestroyWrapper, intFree, intCompare );
+    return map;
+}
+
+
+Map createPlayersMap()
+{
+    Map map = mapCreate(playerCopyWrapper, intCopy,
+                        playerDestroyWrapper, intFree, intCompare );
+    return map;
+}
+
+
+Map createTournamentsMap()
+{
+    Map map = mapCreate(tournamentCopyWrapper, intCopy,
+                        tournamentDestroyWrapper, intFree, intCompare );
     return map;
 }

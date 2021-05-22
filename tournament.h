@@ -109,7 +109,7 @@ ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int gam
  *                     The winner of the tournament is the player with the highest score.
  *                     Once the tournament is over, no games can be added for that tournament.
  *
- * @param tournament - the tournament id. Must be non-negative, and unique.
+ * @param tournament - the tournament
  * @param winner_id  - the id of the winner in the tournament
  *
  * @return
@@ -124,7 +124,7 @@ ChessResult tournamentEnd (Tournament tournament, int winner_id);
 /**
  * tournamentCalculateWinner: The function will calculate the winner of the tournament
  *
- * @param tournament - the tournament id. Must be non-negative, and unique.
+ * @param tournament - the tournament
  *
  * @return
  *     the id of the winner
@@ -136,7 +136,7 @@ int tournamentCalculateWinner (Tournament tournament);
  * tournamentGetSizePlayers: The function will return the number of unique players
  *                  in a given tournament
  *
- * @param tournament - the tournament id. Must be non-negative, and unique.
+ * @param tournament - the tournament
  *
  * @return
  *     The number of unique players in the tournament
@@ -149,7 +149,7 @@ int tournamentGetSizePlayers (Tournament tournament);
  * tournamentGetSizeGames: The function will return the number of unique games
  *                  in a given tournament
  *
- * @param tournament - the tournament id. Must be non-negative, and unique.
+ * @param tournament - the tournament.
  *
  * @return
  *     The number of unique games in the tournament
@@ -157,26 +157,59 @@ int tournamentGetSizePlayers (Tournament tournament);
 int tournamentGetSizeGames (Tournament tournament);
 
 
-// /**
-//  * tournamentUpdatePlayerInTournmnt: ???????
-//  *
-//  * @param tournament - the tournament id. Must be non-negative, and unique.
-//  *
-//  * @return
-//  *     ?????
-//  */
-// void tournamentUpdatePlayerStatsInTournmnt (Tournament tournament);
 
 
-// /**
-//  * tournamentUpdateStatistics: ???????
-//  *
-//  * @param tournament - the tournament id. Must be non-negative, and unique.
-//  *
-//  * @return
-//  *     ?????
-//  */
-// void tournamentUpdateStatistics (Tournament tournament);
+/**
+ * tournamentGetWinner: The function will return the winner of
+ *                     a given tournament
+ *
+ * @param tournament - the tournament
+ *
+ * @return
+ *     The winner of the tournament
+ */
+int tournamentGetWinner(Tournament tournament);
 
-#endif
 
+/**
+ * tournamentGetLocation: The function will return the location of
+ *                     a given tournament
+ *
+ * @param tournament - the tournament
+ *
+ * @return
+ *     The location of the tournament
+ */
+char* tournamentGetLocation(Tournament tournament);
+
+
+
+/**
+ * tournamentGetLongestGameTime: The function will return the longest game time of
+ *                     a given tournament
+ *
+ * @param tournament - the tournament
+ *
+ * @return
+ *     The longest game time of the tournament
+ */
+int tournamentGetLongestGameTime(Tournament tournament);
+
+
+
+/**
+ * tournamentGetAverageGameTime: The function will return the average game time of
+ *                     a given tournament
+ *
+ * @param tournament - the tournament
+ *
+ * @return
+ *     The average game time of the tournament
+ */
+double tournamentGetAverageGameTime(Tournament tournament);
+
+
+bool tournamentValidateLocation(const char *location);
+
+
+#endif //  _TOURNAMENT_H

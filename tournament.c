@@ -6,6 +6,7 @@
 #include "tournament.h"
 #include "player.h"
 #include "string.h"
+#include <limits.h>
 
 
 struct tournament_t {
@@ -27,6 +28,19 @@ struct tournament_t {
 //     return map;
 // }
 
+
+// Get the length (amount of digits) of the longest int
+// static int maxLengthOfInt()
+// {
+//     int length = 0;
+//     int number = INT_MAX;
+//     while (number != 0)
+//     {
+//         length++;
+//         number /= 10;
+//     }
+//     return length;
+// }
 
 
 // Checks if a char* points to a uppercased
@@ -62,36 +76,10 @@ static bool isSpace(const char *character)
     return *character == ' ';
 }
 
-static bool validateLocation(const char *location)
-{
-    if (location == NULL)
-    {
-        return false;
-    }
-    
-    // Verify first letter is uppercased
-    if (!isUpper(location))
-    {
-        return false;
-    }
-
-    // Verify the rest of the letters are lowercased/spaces
-    location++;
-    while (location)
-    {
-        // If current char is not a lowercased one and not a space, the char is invalid
-        if (!isLower(location) && !isSpace(location))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 static char* copyLocation (const char *location)
 {
     // Location is NULL / invalid by the rules we applied
-    if (!validateLocation(location))
+    if (!tournamentValidateLocation(location))
     {
         return NULL;
     }
@@ -105,7 +93,6 @@ static char* copyLocation (const char *location)
     new_location = strcpy(new_location, location);
     return new_location;
 }
-
 
 
 Tournament tournamentCreate(int tournament_id, int max_games_per_player,
@@ -129,7 +116,7 @@ Tournament tournamentCreate(int tournament_id, int max_games_per_player,
     }
 
 
-    if (!validateLocation(tournament_location))
+    if (!tournamentValidateLocation(tournament_location))
     {
         return NULL;
     }
@@ -244,10 +231,44 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player, int secon
 }
 
 
-// ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[])
-// {
+ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[])
+{
+    // Input verification
+    if (tournament == NULL || game_ids == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
 
-// }
+    if (player_id <= 0)
+    {
+        return CHESS_INVALID_ID;
+    }
+    
+    if (tournament->winner != INVALID_PLAYER)
+    {
+        return CHESS_TOURNAMENT_ENDED;
+    }
+
+
+    // Scan games, remove player from games
+    for (int i = 0 ; i < tournament->max_games_per_player ; i++)
+    {
+        // Extra breaking point
+        if (game_ids[i] == INVALID_GAME_ID)
+        {
+            break;
+        }
+        Game game = mapGet(tournament->games, &game_ids[i]);
+        if (game == NULL)
+        {
+            return CHESS_INVALID_ID; // NEVER GET HERE?????
+        }
+
+        gameRemovePlayer(game, player_id);
+    }
+
+    return CHESS_SUCCESS;
+}
 
 
 ChessResult tournamentEnd (Tournament tournament, int winner_id)
@@ -283,15 +304,54 @@ int tournamentGetSizeGames (Tournament tournament)
     return tournament->current_game_id;
 }
 
- void tournamentUpdateStatistics (Tournament tournament)
+
+int tournamentGetWinner(Tournament tournament)
 {
-     
+    return tournament->winner;
+}
+
+char* tournamentGetLocation(Tournament tournament)
+{
+    return tournament->location;
+}
+
+int tournamentGetLongestGameTime(Tournament tournament)
+{
+    return tournament->longest_game;
+}
+
+double tournamentGetAverageGameTime(Tournament tournament)
+{
+    if(tournament->current_game_id == 0)
+    {
+        return 0;
+    }
+    return tournament->total_game_time / tournament->current_game_id;
 }
 
 
-// void tournamentUpdatePlayerStatsInTournmnt (Tournament tournament)
-// {
+bool tournamentValidateLocation(const char *location)
+{
+    if (location == NULL)
+    {
+        return false;
+    }
     
-// }
+    // Verify first letter is uppercased
+    if (!isUpper(location))
+    {
+        return false;
+    }
 
-// // what to do here?
+    // Verify the rest of the letters are lowercased/spaces
+    location++;
+    while (location)
+    {
+        // If current char is not a lowercased one and not a space, the char is invalid
+        if (!isLower(location) && !isSpace(location))
+        {
+            return false;
+        }
+    }
+    return true;
+}

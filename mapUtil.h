@@ -18,7 +18,21 @@ void* gameCopyWrapper(void *game);
 
 void gameDestroyWrapper(void *game);
 
+void* playerCopyWrapper(void *player);
+
+void playerDestroyWrapper(void *player);
+
+void* tournamentCopyWrapper(void *tournament);
+
+void tournamentDestroyWrapper(void *tournament);
+
+
+
 
 Map createGamesMap();
 
 Map createPlayerInTournamentsMap();
+
+Map createPlayersMap();
+
+Map createTournamentsMap();

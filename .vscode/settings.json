@@ -2,6 +2,7 @@
     "files.associations": {
         "playerintournament.h": "c",
         "player.h": "c",
-        "game.h": "c"
+        "game.h": "c",
+        "chesssystem.h": "c"
     }
 }
