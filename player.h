@@ -234,6 +234,12 @@ int *playerGetFirstTournamentID(Player player);
 int *playerGetNextTournamentID(Player player);
 
 
+int playerGetWinsInTournament(Player player, int tournament_id);
+
+int playerGetDrawsInTournament(Player player, int tournament_id);
+
+int playerGetLossesInTournament(Player player, int tournament_id);
+
 #endif
 
 

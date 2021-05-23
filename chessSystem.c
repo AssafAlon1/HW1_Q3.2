@@ -18,21 +18,21 @@ struct chess_system_t {
 //================== INTERNAL FUNCTIONS START ==================//
 
 // Checks if a player plays in a given tournament
-// static bool isPlayerPlayingInTournament(ChessSystem chess, int player_id, int tournament_id)
-// {
-//     if (chess == NULL || player_id <= 0 || tournament_id <= 0)
-//     {
-//         return false;
-//     }
+static bool isPlayerPlayingInTournament(ChessSystem chess, int player_id, int tournament_id)
+{
+    if (chess == NULL || player_id <= 0 || tournament_id <= 0)
+    {
+        return false;
+    }
 
-//     Player wanted_player = mapGet(chess->players, &player_id);
-//     if (wanted_player == NULL)
-//     {
-//         return false;
-//     }
+    Player wanted_player = mapGet(chess->players, &player_id);
+    if (wanted_player == NULL)
+    {
+        return false;
+    }
 
-//     return playerIsPlayingInTournament(wanted_player, tournament_id);
-// }
+    return playerIsPlayingInTournament(wanted_player, tournament_id);
+}
 
 
 // Checks if 2 players play against eachother in a given tournament
@@ -81,12 +81,13 @@ static bool isPlayerInTournamentExceededGames(ChessSystem chess, int player_id,
                                               int tournament_id)
 {
     Player player = mapGet(chess->players, &player_id);
-    return playerCanPlayMoreGamesInTournament(player, tournament_id);
+    bool return_value = playerCanPlayMoreGamesInTournament(player, tournament_id);
+    return !(return_value);
 }
 
 
 
-// Verify the input is valid according to demands
+// Verify the input is valid for the chessAddGame function
 static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id, int first_player,
                                 int second_player, int play_time)
 {
@@ -106,7 +107,7 @@ static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id,
     }
      
     Tournament tournament = mapGet(chess->tournaments, &tournament_id);
-    if (tournamentGetWinner(tournament) <= 0)
+    if (tournamentGetWinner(tournament) > 0)
     {
         return CHESS_TOURNAMENT_ENDED;
     }
@@ -114,12 +115,6 @@ static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id,
     if (isGameBetweenPlayersExists(chess, tournament_id, first_player, second_player) == true)
     {
         return CHESS_GAME_ALREADY_EXISTS;
-    }
-
-    if (isPlayerInTournamentExceededGames(chess, first_player, tournament_id) ||
-        isPlayerInTournamentExceededGames(chess, second_player, tournament_id))
-    {
-        return CHESS_EXCEEDED_GAMES;
     }
 
     return CHESS_SUCCESS;
@@ -261,6 +256,7 @@ static void chessRemovePlayerUpdateGameResult(ChessSystem chess, int tournament_
 }
 
 
+// Verifies input for the chessRemovePlayer function
 static ChessResult chessRemovePlayerVerifyInput(ChessSystem chess, int player_id)
 {
     if (chess == NULL)
@@ -279,6 +275,156 @@ static ChessResult chessRemovePlayerVerifyInput(ChessSystem chess, int player_id
     }
 
     return CHESS_SUCCESS;
+}
+
+
+// Calculates the score of a given player in a tournament
+static int chessCalculatePlayerScore(ChessSystem chess, int player_id, int tournament_id)
+{
+    if (chess == NULL)
+    {
+        return -1;
+    }
+    
+    Player player = mapGet(chess->players, &player_id);
+    if (player == NULL)
+    {
+        return -1;
+    }
+
+    int *game_ids = playerGetGameIdsInTournament(player, tournament_id);
+    if (game_ids == NULL)
+    {
+        return -1;
+    }
+
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    if (tournament == NULL)
+    {
+        return -1;
+    }
+    
+    int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
+    int score = 0;
+    for (int i = 0 ; i < max_games_per_player ; i++)
+    {
+        Game game = tournamentGetGame(tournament, game_ids[i]);
+        int game_winner = gameGetIdOfWinner(game);
+        if (game_winner == player_id)
+        {
+            score += TOURNAMENT_WIN_WEIGHT;
+        }
+
+        if (game_winner == INVALID_PLAYER)
+        {
+            score += TOURNAMENT_DRAW_WEIGHT;
+        }
+    }
+
+    return score;
+}
+
+
+// Returns the ID of the player that should be the winner, determined by score, wins, id...
+static int ChessTournamentComparePlayerWithWinner (ChessSystem chess, int tournament_id,
+                    int winner_id, int winner_score, int player_id, int *player_score)
+{
+    if (chess == NULL || player_score == NULL)
+    {
+        return INVALID_PLAYER;
+    }
+
+    *player_score = chessCalculatePlayerScore(chess, player_id, tournament_id);
+
+    if (*player_score < winner_score)
+    {
+        return winner_id;
+    }
+
+    if (*player_score > winner_score)
+    {
+        return player_id;
+    }
+
+    // Both player share the same score
+    Player winner = mapGet(chess->players, &winner_id);
+    Player player = mapGet(chess->players, &player_id);
+    int loss_compare = playerGetLossesInTournament(winner, tournament_id) -
+                        playerGetLossesInTournament(player, tournament_id);
+
+    if (loss_compare < 0)
+    {
+        return winner_id;
+    }
+
+    if (loss_compare > 0)
+    {
+        return player_id;
+    }
+
+    int win_compare = playerGetWinsInTournament(winner, tournament_id) -
+                        playerGetWinsInTournament(player,tournament_id);
+
+    if (win_compare > 0)
+    {
+        return winner_id;
+    }
+
+    if (win_compare < 0)
+    {
+        return player_id;
+    }
+    
+    return winner_id > player_id ? winner_id : player_id;
+    
+}
+
+
+// Calculates the winner in a given tournament and returns their ID
+static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
+{
+    if (chess == NULL)
+    {
+        return INVALID_PLAYER;
+    }
+
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    if (tournament == NULL)
+    {
+        return INVALID_PLAYER;
+    }
+    int amount_of_games = tournamentGetSizeGames(tournament);
+    int *player_iterator = mapGetFirst(chess->players);
+    if (player_iterator == NULL || amount_of_games == 0)
+    {
+        return INVALID_PLAYER;
+    }
+
+    int winner_id = *player_iterator;
+    int winner_score     = chessCalculatePlayerScore(chess, winner_id, tournament_id);
+    //free free freefreefreefreefree
+    while (player_iterator)
+    {
+        bool is_playing = isPlayerPlayingInTournament(chess, *player_iterator, tournament_id);
+        if (!is_playing)
+        {
+            player_iterator = mapGetNext(chess->players);
+            continue;
+        }
+
+        int player_score = 0;
+        int new_winner = ChessTournamentComparePlayerWithWinner(chess, tournament_id, winner_id,
+                                            winner_score, *player_iterator, &player_score);
+        
+        if (new_winner == *player_iterator)
+        {
+            winner_id = new_winner;
+            winner_score = player_score;
+        }
+        player_iterator = mapGetNext(chess->players);
+    }
+
+    return winner_id;
 }
 
 //================== INTERNAL FUNCTIONS END ==================//
@@ -405,7 +551,7 @@ ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
     Tournament tournament = mapGet(chess->tournaments, &tournament_id);
     int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
 
-    // Creatin new PlayerInTournaments for the players if needed
+    // Creating new PlayerInTournaments for the players if needed
     chessAddGameCreatePlayerInTournamentsIfNeeded(tournament_id, first_player_struct,
                         second_player_struct, max_games_per_player, &amount_of_new_players);
 
@@ -490,6 +636,7 @@ ChessResult chessRemovePlayer(ChessSystem chess, int player_id)
     while (tournament_id_ptr != NULL)
     {
         int tournament_id = *tournament_id_ptr;
+        free(tournament_id_ptr);
         tournament_id_ptr = playerGetNextTournamentID(player);
         Tournament tournament = mapGet(chess->tournaments, &tournament_id);
 
@@ -522,19 +669,106 @@ ChessResult chessRemovePlayer(ChessSystem chess, int player_id)
     return CHESS_SUCCESS;
 }
 
-//ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
-// calculate the winner
+ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
 
-//double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessResult* chess_result)
+    if (tournament_id <= 0)
+    {
+        return CHESS_INVALID_ID;
+    }
 
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    if (tournament == NULL)
+    {
+        return CHESS_TOURNAMENT_NOT_EXIST;
+    }
+
+    if (tournamentGetWinner(tournament) != INVALID_PLAYER)
+    {
+        return CHESS_TOURNAMENT_ENDED;
+    }
+
+    if (tournamentGetSizeGames(tournament) == 0)
+    {
+        return CHESS_NO_GAMES;
+    }
+    
+    int tournament_winner = ChessTournamentCalculateWinner(chess, tournament_id);
+    return tournamentEnd(tournament, tournament_winner);
+
+}
+
+double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessResult* chess_result)
+{
+    if (chess == NULL)
+    {
+        *chess_result = CHESS_NULL_ARGUMENT;
+        return -1;
+    }
+
+    if (player_id <= 0)
+    {
+        *chess_result = CHESS_INVALID_ID;
+        return -1;
+    }
+
+    Player player = mapGet(chess->players, &player_id);
+    if (player == NULL)
+    {
+        *chess_result = CHESS_PLAYER_NOT_EXIST;
+        return -1;
+    }
+    *chess_result = CHESS_SUCCESS;
+    return playerGetFinishedGamesAverageTime(player);
+    
+}
 
 //ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
 
 
-//ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
+ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+
+    bool is_tournament_ended = false;
+    int *tournament_id_iterator = mapGetFirst(chess->tournaments);
+    FILE *output_file = fopen(path_file, "w+");
+
+    while (tournament_id_iterator != NULL)
+    {
+        Tournament tournament = mapGet(chess->tournaments, tournament_id_iterator);
+        if (tournamentGetWinner(tournament) == INVALID_PLAYER)
+        {
+            tournament_id_iterator = mapGetNext(chess->tournaments);
+            continue;
+        }
+
+        is_tournament_ended = true;
+        bool print_result = tournamentPrintStatsToFile(tournament, output_file);
+        if (print_result == false)
+        {
+            return CHESS_SAVE_FAILURE;
+        }
+        tournament_id_iterator = mapGetNext(chess->tournaments);
+    }
+
+    if (!is_tournament_ended)
+    {
+        fclose(output_file);
+        return CHESS_NO_TOURNAMENTS_ENDED;
+    }
+
+    // SAVE FAILURE???????????
+    return CHESS_SUCCESS;
+}
 
 
-//static int ChessTournamentCalculateWinner (Tournament tournament)
-//{
-    //TOURNAMENT_WIN_WEIGHT
-//}
+
+

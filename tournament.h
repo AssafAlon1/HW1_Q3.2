@@ -243,4 +243,7 @@ int tournamentGetMaxGamesPerPlayer(Tournament tournament);
  */
 Game tournamentGetGame(Tournament tournament, int game_id);
 
+
+bool tournamentPrintStatsToFile(Tournament tournament, FILE *output_file);
+
 #endif //  _TOURNAMENT_H

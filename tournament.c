@@ -294,8 +294,7 @@ ChessResult tournamentEnd (Tournament tournament, int winner_id)
         return CHESS_NULL_ARGUMENT;
     }
 
-    //check if there were games played in the tournament
-    //there is no need to check for "0 players tournament"
+    // Checks if there were games played in the tournament
     if (tournament->current_game_id == 0)
     {
         return CHESS_NO_GAMES;
@@ -342,7 +341,7 @@ double tournamentGetAverageGameTime(Tournament tournament)
     {
         return 0;
     }
-    return tournament->total_game_time / tournament->current_game_id;
+    return (double)tournament->total_game_time / tournament->current_game_id;
 }
 
 
@@ -395,3 +394,29 @@ Game tournamentGetGame(Tournament tournament, int game_id)
 }
 
 
+bool tournamentPrintStatsToFile(Tournament tournament, FILE *output_file)
+{
+    double average_game_time = tournamentGetAverageGameTime(tournament);
+    int fprintf_output = 0;
+    fprintf_output = fprintf(output_file,"%d\n%d\n%.2f\n",
+                            tournament->winner,
+                            tournament->longest_game,
+                            average_game_time);
+
+    if (fprintf_output < 0)
+    {
+        return false;
+    }
+
+    fprintf_output = fprintf(output_file, "%s\n%d\n%d\n"  ,
+                            tournament->location,
+                            tournament->current_game_id,
+                            tournament->amount_of_players);
+
+    if (fprintf_output < 0)
+    {
+        return false;
+    }
+
+    return true;
+}

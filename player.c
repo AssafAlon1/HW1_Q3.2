@@ -441,3 +441,36 @@ int *playerGetNextTournamentID(Player player)
     }
     return mapGetNext(player->player_in_tournaments);
 }
+
+
+int playerGetWinsInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return -1;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    return playerInTournamentGetWins(player_in_tournament);
+}
+
+int playerGetDrawsInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return -1;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    return playerInTournamentGetDraws(player_in_tournament);
+}
+
+int playerGetLossesInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return -1;
+    }
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    return playerInTournamentGetLosses(player_in_tournament);
+}

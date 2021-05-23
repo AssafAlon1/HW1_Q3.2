@@ -224,11 +224,7 @@ int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament)
 
 bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament)
 {
-    if (playerInTournamentGetTotalGames(player_in_tournament) < player_in_tournament->max_games_per_player)
-    {
-        return true;
-    }
-    return false;
+    return playerInTournamentGetTotalGames(player_in_tournament) < player_in_tournament->max_games_per_player;
 }
 
 int playerInTournamentGetTournamentID(PlayerInTournament player_in_tournament)

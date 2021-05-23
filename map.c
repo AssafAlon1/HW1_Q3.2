@@ -351,7 +351,6 @@ MapDataElement mapGet(Map map, MapKeyElement keyElement)
         return NULL;
     }
 
-    map->iterator = NULL; // Now or later?
 
     // Return data if key exists
     if (mapContains(map, keyElement))
