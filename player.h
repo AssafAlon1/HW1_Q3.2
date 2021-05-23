@@ -210,6 +210,30 @@ Map* playerGetPlayerInTournaments(Player player);
  */
 bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, int outcome_change);
 
+
+/**
+*	playerGetFirstTournamentID: Sets the internal iterator to the the first tournament
+                              and return it
+*
+* @param player - The player that played the tournaments
+* @return
+* 	NULL if a NULL pointer was sent or the map is empty or allocation fails
+* 	The first key tournament of the map otherwise
+*/
+int *playerGetFirstTournamentID(Player player);
+
+/**
+*	playerGetNextTournamentID: Advances the iterator to the next tournament and
+                               returns the ID of it
+* @param player - The player that played the tournaments
+* @return
+* 	NULL if reached the end of the map, or the iterator is at an invalid state
+* 	,or a NULL sent as argument or allocation fails
+* 	The next tournament ID on the map in case of success
+*/
+int *playerGetNextTournamentID(Player player);
+
+
 #endif
 
 

@@ -422,3 +422,22 @@ bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, 
 
     return true;
 }
+
+
+int *playerGetFirstTournamentID(Player player)
+{
+    if (player == NULL)
+    {
+        return NULL;
+    }
+    return mapGetFirst(player->player_in_tournaments);
+}
+
+int *playerGetNextTournamentID(Player player)
+{
+    if (player == NULL)
+    {
+        return NULL;
+    }
+    return mapGetNext(player->player_in_tournaments);
+}
