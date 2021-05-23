@@ -209,12 +209,38 @@ int tournamentGetLongestGameTime(Tournament tournament);
 double tournamentGetAverageGameTime(Tournament tournament);
 
 
+/**
+ * tournamentValidateLocation: The function checks whether a given location is valid
+ *
+ * @param location - a string of a location
+ *
+ * @return
+ *     true - if the location is valid
+ *     false - if the loctaion is invalid
+ */
 bool tournamentValidateLocation(const char *location);
 
 
-
+/**
+ * tournamentGetMaxGamesPerPlayer: The function returns the maximum allowed games per player
+ *
+ * @param tournament - the tournament
+ *
+ * @return
+ *     the maximum allowed games per player
+ */
 int tournamentGetMaxGamesPerPlayer(Tournament tournament);
 
+
+/**
+ * tournamentGetGame: The function returns a game with a given ID from a given tournament
+ *
+ * @param tournament - the tournament
+ * @param game_id    - the id of the needed game
+ *
+ * @return
+ *     The game with the given ID
+ */
 Game tournamentGetGame(Tournament tournament, int game_id);
 
 #endif //  _TOURNAMENT_H

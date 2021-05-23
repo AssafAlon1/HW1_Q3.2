@@ -148,4 +148,17 @@ bool gameisPlayerInGame(Game game, int player_id);
  */
 int gameGetTournamentID(Game game);
 
+
+/**
+ * gameGetPlayersOpponent: Get the ID of a player's opponent in a given game
+ *
+ * @param game - the relevant game
+ * @param player_id - the id of the player that shouldn't be returned
+ * 
+ * @return
+ *     DELETED_PLAYER in the case that the opponent was deleted
+ *     the ID of the opponent otherwise
+ */
+int gameGetPlayersOpponent(Game game, int player_id);
+
 #endif

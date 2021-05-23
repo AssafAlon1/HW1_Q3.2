@@ -377,3 +377,48 @@ PlayerResult playerAddTournament(Player player, int tournament_id, int max_games
 
     return PLAYER_SUCCESS;
 }
+
+Map* playerGetPlayerInTournaments(Player player)
+{
+    return &(player->player_in_tournaments);
+}
+
+
+bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, int outcome_change)
+{
+    if (player == NULL)
+    {
+        return false;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    if (player_in_tournament == NULL)
+    {
+        return false;
+    }
+
+
+    if (outcome_change == DRAW_TO_WIN)
+    {
+        bool result = playerInTournamentUpdateDrawToWin(player_in_tournament);
+        if (!result)
+        {
+            return false;
+        }
+        player->total_draws -= 1;
+        player->total_wins  += 1;
+    }
+
+    if (outcome_change == LOSS_WEIGHT)
+    {
+        bool result = playerInTournamentUpdateLossToWin(player_in_tournament);
+        if (!result)
+        {
+            return false;
+        }
+        player->total_losses -= 1;
+        player->total_wins  += 1;
+    }
+
+    return true;
+}

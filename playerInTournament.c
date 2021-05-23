@@ -230,3 +230,31 @@ bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament)
     }
     return false;
 }
+
+int playerInTournamentGetTournamentID(PlayerInTournament player_in_tournament)
+{
+    return player_in_tournament->tournament_id;
+}
+
+
+bool playerInTournamentUpdateDrawToWin(PlayerInTournament player_in_tournament)
+{
+    if (player_in_tournament == NULL || player_in_tournament->draws <= 0)
+    {
+        return false;
+    }
+    player_in_tournament->draws -= 1;
+    player_in_tournament->wins  += 1;
+    return true;
+}
+
+bool playerInTournamentUpdateLossToWin(PlayerInTournament player_in_tournament)
+{
+    if (player_in_tournament == NULL || player_in_tournament->losses <= 0)
+    {
+        return false;
+    }
+    player_in_tournament->losses -= 1;
+    player_in_tournament->wins  += 1;
+    return true;
+}

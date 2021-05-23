@@ -306,7 +306,7 @@ void tournamentTests()
 
 
     printf(">>TRNMNT Running extra tests tour2...");
-    Tournament tour2 = tournamentCreate(2, 3, "Israel");
+    Tournament tour2 = tournamentCreate(2, 3, "Israel home");
     assert(tour2 != NULL);
     assert(tournamentAddGame(tour2, 1001, 1002, FIRST_PLAYER, 1000, 2) == CHESS_SUCCESS);
     assert(tournamentAddGame(tour2, 1001, 1003, FIRST_PLAYER, 900, 1) == CHESS_SUCCESS);
@@ -329,10 +329,90 @@ void tournamentTests()
     tournamentEnd(tour2, 1004);
     assert(tournamentGetWinner(tour1) == 1004);
     tournamentDestroy(tour2);
+
+    assert(tournamentCreate(3, 10, "invalid name") == NULL);
+    assert(tournamentCreate(3, 10, "Invalid Name") == NULL);
+    assert(tournamentCreate(3, 10, "Invalid Name") == NULL);
+    assert(tournamentCreate(3, 10, "Invalid name2") == NULL);
+    assert(tournamentCreate(3, 10, "Invalid name! really") == NULL);
+
     printf("   [OK]\n");
 
 
 }
+
+// void chessTests()
+// {
+//     printf("##CHESS Running basic tests chess1      [  ]\n");
+
+    
+//     // Checking NULL handling
+//     printf(">>CHESS verifying NULL handling...");
+
+//     assert(chessCalculateAveragePlayTime(NULL, 4, NULL) == CHESS_NULL_ARGUMENT);
+//     assert(chessEndTournament(NULL, 3) == CHESS_NULL_ARGUMENT);
+//     assert(chessRemovePlayer(NULL, 101) == CHESS_NULL_ARGUMENT);
+//     assert(chessSavePlayersLevels(NULL, stdout) == CHESS_NULL_ARGUMENT);
+//     assert(chessSaveTournamentStatistics(NULL, "C:\\Temp\\file.txt") == CHESS_NULL_ARGUMENT);
+//     assert(chessAddGame(NULL, 1, 2, 3, FIRST_PLAYER, 300) == CHESS_NULL_ARGUMENT);
+//     assert(chessAddTournament(NULL, 101, 5, "Nowhere") == CHESS_NULL_ARGUMENT);
+//     assert(chessAddTournament(NULL, 101, 5, "INVALID5NAME*") == CHESS_NULL_ARGUMENT);
+//     assert(chessRemoveTournament(NULL, 1) == CHESS_NULL_ARGUMENT);
+
+//     printf("      [OK]\n");
+
+
+//     // Chess creation and basic operations
+//     printf(">>CHESS verifying basic operation...");
+    
+//     // Creation of chess & Add tournaments
+//     ChessSystem chess1 = chessCreate();
+//     assert(chess1 != NULL);
+//     assert(chessAddTournament(chess1, 1, 3, "Turkey") == CHESS_SUCCESS);
+//     assert(chessAddTournament(chess1, 2, 3, "THE UNKNOWN") == CHESS_INVALID_LOCATION);
+//     assert(chessAddTournament(chess1, 2, 3, "the unknown") == CHESS_INVALID_LOCATION);
+//     assert(chessAddTournament(chess1, 2, 3, "The unkn0wn") == CHESS_INVALID_LOCATION);
+//     assert(chessAddTournament(chess1, 2, 3, "a") == CHESS_INVALID_LOCATION);
+//     assert(chessAddTournament(chess1, 2, 3, "A") == CHESS_SUCCESS);
+//     assert(chessAddTournament(chess1, 2, 3, "A") == CHESS_TOURNAMENT_ALREADY_EXISTS);
+
+//     //Trying to get statistics when there are none
+//     ChessResult result_out = CHESS_SUCCESS;
+//     double avg = chessCalculateAveragePlayTime(chess1, 1, &result_out);
+//     if (1 == 0)
+//     {
+//         printf("avg %f", avg);
+//     }
+//     assert(result_out == CHESS_PLAYER_NOT_EXIST);
+//     avg = chessCalculateAveragePlayTime(chess1, -2, &result_out);
+//     assert(result_out == CHESS_INVALID_ID);
+//     //
+//     // ADD SOME MORE HERE
+//     //
+
+
+//     // Ending tournaments
+//     assert(chessEndTournament(chess1, -5) == CHESS_INVALID_ID);
+//     assert(chessEndTournament(chess1, 11) == CHESS_TOURNAMENT_NOT_EXIST);
+//     assert(chessEndTournament(chess1, 11) == CHESS_NO_GAMES);
+
+
+//     // Adding games
+//     assert(chessAddGame(chess1, -5, 1001, 1002, FIRST_PLAYER, 600) == CHESS_INVALID_ID);
+//     assert(chessAddGame(chess1, 0, 1001, 1002, FIRST_PLAYER, 600) == CHESS_INVALID_ID);
+//     assert(chessAddGame(chess1, 11, 1001, 1002, FIRST_PLAYER, 600) == CHESS_TOURNAMENT_NOT_EXIST);
+//     assert(chessAddGame(chess1, 1, 1001, 1002, FIRST_PLAYER, 600) == CHESS_SUCCESS);
+//     assert(my_abs(chessCalculateAveragePlayTime(chess1, 1001, &result_out) - 600) < eps);
+//     assert(chessEndTournament(chess1, 1) == CHESS_SUCCESS);
+//     assert(chessEndTournament(chess1, 1) == CHESS_TOURNAMENT_ENDED);
+//     assert(chessAddGame(chess1, 1, 1001, 1002, FIRST_PLAYER, 600) == CHESS_TOURNAMENT_ENDED);
+    
+//     // tournament 1 has 1 match
+    
+//     chessDestroy(chess1);
+
+//     printf("    [OK]\n");
+// }
 
 int main ()
 {
@@ -340,5 +420,6 @@ int main ()
     playerInTournamentTests();
     playerTests();
     tournamentTests();
+    //chessTests();
     return 0;
 }

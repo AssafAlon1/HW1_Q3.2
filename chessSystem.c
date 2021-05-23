@@ -116,11 +116,6 @@ static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id,
         return CHESS_GAME_ALREADY_EXISTS;
     }
 
-    if (play_time < 0)
-    {
-        return CHESS_INVALID_PLAY_TIME;
-    }
-
     if (isPlayerInTournamentExceededGames(chess, first_player, tournament_id) ||
         isPlayerInTournamentExceededGames(chess, second_player, tournament_id))
     {
@@ -131,9 +126,8 @@ static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id,
 }
 
 
-// Creates players if needed, updates the amount_of_new_players int for each
-// new player created. Returns ChessResult according to the function's outcome
-static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess, /*int *amount_of_new_player,*/
+// Creates players if needed. Returns ChessResult according to the function's outcome
+static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess,
                                         int first_player, int second_player)
 {
     bool first_player_created = false; 
@@ -154,7 +148,6 @@ static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess, /*int *a
             return CHESS_OUT_OF_MEMORY;
         }
         first_player_created = true;
-        //*amount_of_new_player += 1;
     }
 
     if (mapContains(chess->players, &second_player) == false)
@@ -177,7 +170,67 @@ static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess, /*int *a
             return CHESS_OUT_OF_MEMORY;
         }
 
-        //*amount_of_new_player += 1;
+    }
+
+    return CHESS_SUCCESS;
+}
+
+
+// Creates the game, adds it to the players' & tournament records
+static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player first_player_struct,
+                            Player second_player_struct, Winner winner, int play_time,
+                            int amount_of_new_players, int max_games_per_player)
+{
+    ChessResult new_game_result =  tournamentAddGame(tournament, playerGetID(first_player_struct),
+                        playerGetID(second_player_struct), winner, play_time, amount_of_new_players);
+    
+    if (new_game_result != CHESS_SUCCESS)
+    {
+        return new_game_result;
+    }
+    int new_game_id = tournamentGetSizeGames(tournament) - 1;
+    Game new_game = tournamentGetGame(tournament, new_game_id);
+
+    PlayerResult add_game_result = playerAddGame(first_player_struct, new_game, max_games_per_player);
+    if (add_game_result != PLAYER_SUCCESS)
+    {
+        return CHESS_OUT_OF_MEMORY;
+    }
+    add_game_result = playerAddGame(second_player_struct, new_game, max_games_per_player);
+    if (add_game_result != PLAYER_SUCCESS)
+    {
+        return CHESS_OUT_OF_MEMORY;
+    }
+
+    return CHESS_SUCCESS;
+}
+
+
+// Creates PlayerInTournaments for the players if needed,
+// updating the amount_of_new_players pointer in the process
+static ChessResult chessAddGameCreatePlayerInTournamentsIfNeeded(int tournament_id,
+                  Player first_player_struct, Player second_player_struct,
+                  int max_games_per_player, int *amount_of_new_players)
+{
+    // player's first game in tournament
+    if (playerGetGameIdsInTournament(first_player_struct, tournament_id) == NULL)
+    {
+        *amount_of_new_players += 1;
+        if (playerAddTournament(first_player_struct, tournament_id,
+                            max_games_per_player) == PLAYER_OUT_OF_MEMORY)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
+    }
+
+    if (playerGetGameIdsInTournament(second_player_struct, tournament_id) == NULL)
+    {
+        *amount_of_new_players += 1;
+        if (playerAddTournament(second_player_struct, tournament_id,
+                            max_games_per_player) == PLAYER_OUT_OF_MEMORY)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
     }
 
     return CHESS_SUCCESS;
@@ -277,7 +330,7 @@ ChessResult chessAddTournament (ChessSystem chess, int tournament_id,
 ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
                                 int second_player, Winner winner, int play_time)
 {
-
+    // Verifying basic input
     ChessResult verify_input = chessAddGameVerifyInput(chess, tournament_id,
                                     first_player, second_player, play_time);
     
@@ -286,10 +339,7 @@ ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
         return verify_input;
     }
     
-    
-    
     // Checks if players already exist in the system
-    //int amount_of_new_players = 0;
     ChessResult player_create_result = chessAddGameCreatePlayersIfNeeded(
                                         chess, first_player, second_player);
     if (player_create_result != CHESS_SUCCESS)
@@ -297,21 +347,152 @@ ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
         return player_create_result;
     }
 
+    // Get the players' structs
+    Player first_player_struct = mapGet(chess->players, &first_player);
+    Player second_player_struct = mapGet(chess->players, &second_player);
+    if (first_player_struct == NULL || second_player_struct == NULL)
+    {
+        return CHESS_OUT_OF_MEMORY; // Shouldn't get here
+    }
 
+    // Handling cases of a player never played in the tournament before
+    int amount_of_new_players = 0;
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
+
+    // Creatin new PlayerInTournaments for the players if needed
+    chessAddGameCreatePlayerInTournamentsIfNeeded(tournament_id, first_player_struct,
+                        second_player_struct, max_games_per_player, &amount_of_new_players);
+
+
+    if (isGameBetweenPlayersExists(chess, tournament_id, first_player, second_player))
+    {
+        return CHESS_GAME_ALREADY_EXISTS;
+    }
+
+    // Check play time
+    if (play_time < 0)
+    {
+        return CHESS_INVALID_PLAY_TIME;
+    }
+
+    // EXCEEDED GAMES
+    if (isPlayerInTournamentExceededGames(chess, first_player, tournament_id) ||
+        isPlayerInTournamentExceededGames(chess, second_player, tournament_id))
+    {
+        return CHESS_EXCEEDED_GAMES;
+    }
+
+    ChessResult add_game_result = chessAddGameTournamentAndPlayer(tournament, first_player_struct,
+                            second_player_struct, winner, play_time,
+                            amount_of_new_players, max_games_per_player);
+
+    return add_game_result;
+}
+
+
+
+ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+
+    if (tournament_id <= 0)
+    {
+        return CHESS_INVALID_ID;
+    }
+
+    if (!(mapContains(chess->tournaments, &tournament_id)))
+    {
+        return CHESS_TOURNAMENT_NOT_EXIST;
+    }
+
+    // Remove the tournament 
+    mapRemove(chess->tournaments, &tournament_id);
+
+    // Remove tournament records and stats from players
+    Player player_iterator = mapGetFirst(chess->players);
+    while (player_iterator != NULL)
+    {
+        if (playerIsPlayingInTournament(player_iterator, tournament_id))
+        {
+            playerRemoveTournament(player_iterator, tournament_id);
+        }
+        player_iterator = mapGetNext(chess->players);
+    }
 
     return CHESS_SUCCESS;
 }
 
-//     // CHECK IF GAME ALREADY EXISTS - STATIC HELPER FUNCTION
-//     // CHECK AMOUNT OF NEW PLAYERS WITH isPlayerPlayingInTournament
- 
+ChessResult chessRemovePlayer(ChessSystem chess, int player_id)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
 
+    if (player_id <= 0)
+    {
+        return CHESS_PLAYER_NOT_EXIST;
+    }
 
-//ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
+    if (!mapContains(chess->players, &player_id))
+    {
+        return CHESS_PLAYER_NOT_EXIST;
+    }
 
+    Player player = mapGet(chess->players, &player_id);
+    Map* player_in_tournaments = playerGetPlayerInTournaments(player);
+    PlayerInTournament player_in_tournaments_iterator = mapGetFirst(*player_in_tournaments);
+    
+    while (player_in_tournaments_iterator != NULL)
+    {
+        int tournament_id = playerInTournamentGetTournamentID(player_in_tournaments_iterator);
+        Tournament tournament = mapGet(chess->tournaments, &tournament_id);
 
-//ChessResult chessRemovePlayer(ChessSystem chess, int player_id)
+        // Tournament ended
+        if (tournamentGetWinner(tournament) != INVALID_PLAYER)
+        {
+            player_in_tournaments_iterator = mapGetNext(*player_in_tournaments);
+            continue;
+        }
 
+        // scan games and update stats
+        int *game_ids = playerInTournamentGetGameIds(player_in_tournaments_iterator);
+        int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
+        
+        for (int i = 0 ; i < max_games_per_player ; i++)
+        {
+            if (game_ids[i] == INVALID_GAME_ID)
+            {
+                break;
+            }
+
+            Game current_game = tournamentGetGame(tournament, game_ids[i]);
+            int opponent_id   = gameGetPlayersOpponent(current_game, player_id);
+            Player opponent   = mapGet(chess->players, &opponent_id);
+            int game_winner   = gameGetIdOfWinner(current_game);
+            if (game_winner  == opponent_id)
+            {
+                continue;
+            }
+            if (game_winner == INVALID_PLAYER)
+            {
+                playerUpdateResultsAfterOpponentDeletion(opponent, tournament_id, DRAW_TO_WIN);
+                continue;
+            }
+
+            playerUpdateResultsAfterOpponentDeletion(opponent, tournament_id, LOSE_TO_WIN);
+        }
+
+        tournamentRemovePlayer(tournament, player_id, game_ids);
+    }
+    
+    
+    return CHESS_SUCCESS;
+}
 
 //ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
 // calculate the winner

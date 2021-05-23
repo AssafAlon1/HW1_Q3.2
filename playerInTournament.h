@@ -126,8 +126,61 @@ int playerInTournamentGetTotalTime (PlayerInTournament player_in_tournament);
 int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament);
 
 
-
+/**
+ * playerInTournamentGetGameIds: Return the array of game IDs
+ *
+ * @param player_in_tournament - the relevant player in tournament.
+ *
+ * @return
+ *     the game ID array of said player in tournament
+ */
 int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament);
 
+
+/**
+ * playerInTournamentCanPlayMore: Return whether a player can play more games in the tournament
+ *
+ * @param player_in_tournament - the relevant player in tournament.
+ *
+ * @return
+ *     true - if the player can play more games in the tournament
+ *     false - if the player cannot play more games in the tournament
+ */
 bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament);
+
+
+/**
+ * playerInTournamentGetTournamentID: Return the ID of the relevant tournament 
+ *
+ * @param player_in_tournament - the relevant player in tournament.
+ *
+ * @return
+ *     the ID of the tournament in which the player plays
+ */
+int playerInTournamentGetTournamentID(PlayerInTournament player_in_tournament);
+
+
+/**
+ * playerInTournamentUpdateDrawToWin: Removes a draw from the record and adds a win 
+ *
+ * @param player_in_tournament - the relevant player in tournament.
+ *
+ * @return
+ *     true - if the operation finished successfully
+ *     false - if player_in_tournament is NULL / there are no draws in record
+ */
+bool playerInTournamentUpdateDrawToWin(PlayerInTournament player_in_tournament);
+
+
+/**
+ * playerInTournamentUpdateLossToWin: Removes a loss from the record and adds a win 
+ *
+ * @param player_in_tournament - the relevant player in tournament.
+ *
+ * @return
+ *     true - if the operation finished successfully
+ *     false - if player_in_tournament is NULL / there are no losses in record
+ */
+bool playerInTournamentUpdateLossToWin(PlayerInTournament player_in_tournament);
+
 #endif

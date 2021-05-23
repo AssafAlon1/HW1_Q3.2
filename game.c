@@ -135,3 +135,24 @@ int gameGetTournamentID(Game game)
 {
     return game->tournament_id;
 }
+
+
+int gameGetPlayersOpponent(Game game, int player_id)
+{
+    if (game == NULL)
+    {
+        return -1;
+    }
+
+    if (!gameisPlayerInGame(game, player_id))
+    {
+        return INVALID_PLAYER;
+    }
+
+    if (game->first_player == player_id)
+    {
+        return game->second_player;
+    }
+
+    return game->first_player;
+}

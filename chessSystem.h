@@ -151,7 +151,7 @@ ChessResult chessRemovePlayer(ChessSystem chess, int player_id);
  *     CHESS_INVALID_ID - if the tournament ID number is invalid.
  *     CHESS_TOURNAMENT_NOT_EXIST - if the tournament does not exist in the system.
  *     CHESS_TOURNAMENT_ENDED - if the tournament already ended
- *     CHESS_N0_GAMES - if the tournament does not have any games.
+ *     CHESS_NO_GAMES - if the tournament does not have any games.
  *     CHESS_SUCCESS - if tournament was ended successfully.
  */
 ChessResult chessEndTournament (ChessSystem chess, int tournament_id);
