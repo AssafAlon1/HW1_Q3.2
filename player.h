@@ -120,6 +120,36 @@ double playerGetLevel(Player player);
  */
 PlayerResult playerRemoveTournament(Player player, int tournament_id);
 
+
+/**
+ * playerGetID: Returns the ID of a given player
+ *
+ * @param player - the player
+ * @return
+ *      The ID of said player
+ */
+int playerGetID(Player player);
+
+
+/**
+ * playerIsPlayingInTournament: Returns whether a player plays in a tournament
+ *
+ * @param player - the player
+ * @param tournament_id - the id of the tournamnet
+ * @return
+ *      true - if the player plays in the tournament
+ *      false - if the player doesn't plays in the tournament
+ */
+bool playerIsPlayingInTournament(Player player, int tournament_id);
+
+
+
+
+int* playerGetGameIdsInTournament(Player player, int tournament_id);
+
+bool playerCanPlayMoreGamesInTournament(Player player, int tournament_id);
+
+PlayerResult playerAddTournament(Player player, int tournament_id, int max_games_per_player);
 #endif
 
 

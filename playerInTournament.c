@@ -113,6 +113,10 @@ PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, in
 
 void playerInTournamentDestroy(PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return;
+    }
     free(player_in_tournament->game_ids);
     free(player_in_tournament);
 }
@@ -120,6 +124,10 @@ void playerInTournamentDestroy(PlayerInTournament player_in_tournament)
 
 PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return NULL;
+    }
     PlayerInTournament new_player_in_tournament = playerInTournamentCreate(
                     player_in_tournament->player_id, player_in_tournament->tournament_id, player_in_tournament->max_games_per_player);
     if (new_player_in_tournament == NULL)
@@ -208,3 +216,17 @@ int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament)
     return player_in_tournament->wins + player_in_tournament->draws + player_in_tournament->losses;
 }
 
+int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament)
+{
+    return player_in_tournament->game_ids;
+}
+
+
+bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament)
+{
+    if (playerInTournamentGetTotalGames(player_in_tournament) < player_in_tournament->max_games_per_player)
+    {
+        return true;
+    }
+    return false;
+}

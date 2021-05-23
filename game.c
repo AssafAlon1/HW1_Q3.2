@@ -33,6 +33,10 @@ Game gameCreate(int tournament_id, int first_player, int second_player, Winner w
 
 void gameDestroy(Game game)
 {
+    if (game == NULL)
+    {
+        return;
+    }
     free(game);
 }
 

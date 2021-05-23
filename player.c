@@ -79,6 +79,19 @@ static PlayerResult playerNewTournament(Player player, int tournament_id, int ma
     return PLAYER_SUCCESS;
 }
 
+
+// Returns the playerInTournament for a given player and a given tournament id
+static PlayerInTournament getPlayerInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return NULL;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    return player_in_tournament;
+}
+
 //================== INTERNAL FUNCTIONS END ==================//
 
 
@@ -116,6 +129,10 @@ Player playerCreate(int player_id)
 
 void playerDestroy(Player player)
 {
+    if (player == NULL)
+    {
+        return;
+    }
    mapDestroy(player->player_in_tournaments);
    free(player); 
 }
@@ -284,6 +301,78 @@ PlayerResult playerRemoveTournament(Player player, int tournament_id)
     if (remove_result != MAP_SUCCESS)
     {
         return PLAYER_GENERAL_ERROR; //Shouldn't get here
+    }
+
+    return PLAYER_SUCCESS;
+}
+
+
+
+int playerGetID(Player player)
+{
+    return player->player_id;
+}
+
+
+bool playerIsPlayingInTournament(Player player, int tournament_id)
+{
+    PlayerInTournament player_in_tournament = getPlayerInTournament(player, tournament_id);
+    return player_in_tournament != NULL ? true : false;
+}
+
+
+int* playerGetGameIdsInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return NULL;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    if (player_in_tournament == NULL)
+    {
+        return NULL;
+    }
+
+    return playerInTournamentGetGameIds(player_in_tournament);
+}
+
+
+bool playerCanPlayMoreGamesInTournament(Player player, int tournament_id)
+{
+    if (player == NULL)
+    {
+        return false;
+    }
+
+    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
+    
+    return playerInTournamentCanPlayMore(player_in_tournament);
+}
+
+
+PlayerResult playerAddTournament(Player player, int tournament_id, int max_games_per_player)
+{
+    if (player == NULL)
+    {
+        return PLAYER_NULL_ARGUMENT;
+    }
+
+    PlayerInTournament player_in_tournament = playerInTournamentCreate(
+                       player->player_id, tournament_id, max_games_per_player);
+    
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_OUT_OF_MEMORY;
+    }
+
+    MapResult put_result = mapPut(player->player_in_tournaments,
+                                 &tournament_id, player_in_tournament);
+    
+    playerInTournamentDestroy(player_in_tournament);
+    if (put_result != MAP_SUCCESS)
+    {
+        return PLAYER_GENERAL_ERROR;
     }
 
     return PLAYER_SUCCESS;

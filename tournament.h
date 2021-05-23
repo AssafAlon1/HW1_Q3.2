@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "chessSystem.h"
-
+#include "game.h"
 
 // typedef enum {
 //     TOURNAMENT_OUT_OF_MEMORY,
@@ -211,5 +211,10 @@ double tournamentGetAverageGameTime(Tournament tournament);
 
 bool tournamentValidateLocation(const char *location);
 
+
+
+int tournamentGetMaxGamesPerPlayer(Tournament tournament);
+
+Game tournamentGetGame(Tournament tournament, int game_id);
 
 #endif //  _TOURNAMENT_H

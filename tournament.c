@@ -149,6 +149,10 @@ Tournament tournamentCreate(int tournament_id, int max_games_per_player,
 
 void tournamentDestroy(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return;
+    }
     mapDestroy(tournament->games);
     free(tournament->location);
     free(tournament);
@@ -157,6 +161,10 @@ void tournamentDestroy(Tournament tournament)
 
 Tournament tournamentCopy(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return NULL;
+    }
     Tournament new_tournament = tournamentCreate(tournament->tournament_id,
                                 tournament->max_games_per_player, tournament->location);
     if (new_tournament == NULL)
@@ -364,3 +372,26 @@ bool tournamentValidateLocation(const char *location)
     }
     return true;
 }
+
+
+int tournamentGetMaxGamesPerPlayer(Tournament tournament)
+{
+    if (tournament == NULL)
+    {
+        return -1;
+    }
+    return tournament->max_games_per_player;
+}
+
+
+Game tournamentGetGame(Tournament tournament, int game_id)
+{
+    if (tournament == NULL)
+    {
+        return NULL;
+    }
+
+    return mapGet(tournament->games, &game_id);
+}
+
+

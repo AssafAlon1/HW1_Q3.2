@@ -126,4 +126,8 @@ int playerInTournamentGetTotalTime (PlayerInTournament player_in_tournament);
 int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament);
 
 
+
+int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament);
+
+bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament);
 #endif

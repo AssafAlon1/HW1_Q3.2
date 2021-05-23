@@ -7,6 +7,7 @@
 #include "tournament.h"
 #include "game.h"
 #include "player.h"
+#include "playerInTournament.h"
 
 struct chess_system_t {
     Map tournaments;
@@ -16,13 +17,171 @@ struct chess_system_t {
 
 //================== INTERNAL FUNCTIONS START ==================//
 
-// static bool isPlayerPlayingInTournament(Player player, Tournament tournament)
+// Checks if a player plays in a given tournament
+// static bool isPlayerPlayingInTournament(ChessSystem chess, int player_id, int tournament_id)
 // {
-//     return true; // TODO
+//     if (chess == NULL || player_id <= 0 || tournament_id <= 0)
+//     {
+//         return false;
+//     }
+
+//     Player wanted_player = mapGet(chess->players, &player_id);
+//     if (wanted_player == NULL)
+//     {
+//         return false;
+//     }
+
+//     return playerIsPlayingInTournament(wanted_player, tournament_id);
 // }
 
 
+// Checks if 2 players play against eachother in a given tournament
+static bool isGameBetweenPlayersExists(ChessSystem chess, int tournament_id,
+                                       int first_player_id, int second_player_id)
+{
+    if (chess == NULL)
+    {
+        return false;
+    }
+    
+    Player first_player = mapGet(chess->players, &first_player_id);
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    
+    if (first_player == NULL || tournament == NULL)
+    {
+        return false;
+    }
+    
+    int *game_ids = playerGetGameIdsInTournament(first_player, tournament_id);
+    if (game_ids == NULL)
+    {
+        return false;
+    }
 
+    int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
+    for (int i = 0 ; i < max_games_per_player ; i++)
+    {
+        if (game_ids[i] == INVALID_GAME_ID)
+        {
+            return false;
+        }
+        
+        Game current_game = tournamentGetGame(tournament, game_ids[i]);
+        if (gameisPlayerInGame(current_game, second_player_id))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//
+static bool isPlayerInTournamentExceededGames(ChessSystem chess, int player_id,
+                                              int tournament_id)
+{
+    Player player = mapGet(chess->players, &player_id);
+    return playerCanPlayMoreGamesInTournament(player, tournament_id);
+}
+
+
+
+// Verify the input is valid according to demands
+static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id, int first_player,
+                                int second_player, int play_time)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+
+    if (tournament_id <= 0 || first_player <= 0 || second_player <= 0  || first_player == second_player)
+    {
+        return CHESS_INVALID_ID;
+    }
+
+    if (mapContains(chess->tournaments , &tournament_id) == false)
+    {
+        return CHESS_TOURNAMENT_NOT_EXIST;
+    }
+     
+    Tournament tournament = mapGet(chess->tournaments, &tournament_id);
+    if (tournamentGetWinner(tournament) <= 0)
+    {
+        return CHESS_TOURNAMENT_ENDED;
+    }
+
+    if (isGameBetweenPlayersExists(chess, tournament_id, first_player, second_player) == true)
+    {
+        return CHESS_GAME_ALREADY_EXISTS;
+    }
+
+    if (play_time < 0)
+    {
+        return CHESS_INVALID_PLAY_TIME;
+    }
+
+    if (isPlayerInTournamentExceededGames(chess, first_player, tournament_id) ||
+        isPlayerInTournamentExceededGames(chess, second_player, tournament_id))
+    {
+        return CHESS_EXCEEDED_GAMES;
+    }
+
+    return CHESS_SUCCESS;
+}
+
+
+// Creates players if needed, updates the amount_of_new_players int for each
+// new player created. Returns ChessResult according to the function's outcome
+static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess, /*int *amount_of_new_player,*/
+                                        int first_player, int second_player)
+{
+    bool first_player_created = false; 
+
+    if (mapContains(chess->players, &first_player) == false)
+    {
+        Player first_player_struct = playerCreate(first_player);
+        if (first_player_struct == NULL)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
+
+        MapResult put_result = mapPut(chess->players, &first_player, first_player_struct);
+        playerDestroy(first_player_struct);
+
+        if (put_result != MAP_SUCCESS)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
+        first_player_created = true;
+        //*amount_of_new_player += 1;
+    }
+
+    if (mapContains(chess->players, &second_player) == false)
+    {
+        Player second_player_struct = playerCreate(second_player);
+        if (second_player_struct == NULL)
+        {
+            return CHESS_OUT_OF_MEMORY;
+        }
+
+        MapResult put_result = mapPut(chess->players, &second_player, second_player_struct);
+        playerDestroy(second_player_struct);
+
+        if (put_result != MAP_SUCCESS)
+        {
+            if (first_player_created)
+            {
+                mapRemove(chess->players, &first_player);
+            }
+            return CHESS_OUT_OF_MEMORY;
+        }
+
+        //*amount_of_new_player += 1;
+    }
+
+    return CHESS_SUCCESS;
+}
 
 //================== INTERNAL FUNCTIONS END ==================//
 
@@ -115,10 +274,38 @@ ChessResult chessAddTournament (ChessSystem chess, int tournament_id,
 }
 
 
-//ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
-//                         int second_player, Winner winner, int play_time)
-// CHECK IF GAME ALREADY EXISTS - STATIC HELPER FUNCTION
-// CHECK AMOUNT OF NEW PLAYERS WITH isPlayerPlayingInTournament
+ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
+                                int second_player, Winner winner, int play_time)
+{
+
+    ChessResult verify_input = chessAddGameVerifyInput(chess, tournament_id,
+                                    first_player, second_player, play_time);
+    
+    if (verify_input != CHESS_SUCCESS)
+    {
+        return verify_input;
+    }
+    
+    
+    
+    // Checks if players already exist in the system
+    //int amount_of_new_players = 0;
+    ChessResult player_create_result = chessAddGameCreatePlayersIfNeeded(
+                                        chess, first_player, second_player);
+    if (player_create_result != CHESS_SUCCESS)
+    {
+        return player_create_result;
+    }
+
+
+
+    return CHESS_SUCCESS;
+}
+
+//     // CHECK IF GAME ALREADY EXISTS - STATIC HELPER FUNCTION
+//     // CHECK AMOUNT OF NEW PLAYERS WITH isPlayerPlayingInTournament
+ 
+
 
 //ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
 
