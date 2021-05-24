@@ -10,6 +10,14 @@
 #include "chessSystem.h"
 
 
+typedef enum {
+    GAME_OUT_OF_MEMORY,
+    GAME_NULL_ARGUMENT,
+    GAME_PLAYER_NOT_EXIST,
+    GAME_SUCCESS
+} GameResult ;
+
+
 typedef struct game_t *Game;
 
 
@@ -57,12 +65,11 @@ Game gameCopy(Game game);
  * @param player_id - the player that needs to be removed
  * 
  * @return
- *     CHESS_NULL_ARGUMENT - if game is NULL.
- *     CHESS_INVALID_ID - if the player ID number is invalid.
- *     CHESS_PLAYER_NOT_EXIST - if the player does not play in the game.
- *     CHESS_SUCCESS - if player was removed successfully.
+ *     GAME_NULL_ARGUMENT - if game is NULL.
+ *     GAME_PLAYER_NOT_EXIST - if the player does not play in the game.
+ *     GAME_SUCCESS - if player was removed successfully.
  */
-ChessResult gameRemovePlayer(Game game, int player_id);
+GameResult gameRemovePlayer(Game game, int player_id);
 
 
 

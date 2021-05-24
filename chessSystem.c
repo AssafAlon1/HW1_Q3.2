@@ -17,6 +17,40 @@ struct chess_system_t {
 
 //================== INTERNAL FUNCTIONS START ==================//
 
+// Translate error code from tournament to chess
+static ChessResult translateTournamentResultToChessResult(TournamentResult result)
+{
+    switch (result)
+    {
+        case TOURNAMENT_OUT_OF_MEMORY:
+            return CHESS_OUT_OF_MEMORY;
+        case TOURNAMENT_NULL_ARGUMENT:
+            return CHESS_NULL_ARGUMENT;
+        case TOURNAMENT_INVALID_ID:
+            return CHESS_INVALID_ID;
+        case TOURNAMENT_INVALID_LOCATION:
+            return CHESS_INVALID_LOCATION;
+        case TOURNAMENT_INVALID_MAX_GAMES:
+            return CHESS_INVALID_MAX_GAMES;
+        case TOURNAMENT_GAME_ALREADY_EXISTS:
+            return CHESS_GAME_ALREADY_EXISTS;
+        case TOURNAMENT_INVALID_PLAY_TIME:
+            return CHESS_INVALID_PLAY_TIME;
+        case TOURNAMENT_EXCEEDED_GAMES:
+            return CHESS_EXCEEDED_GAMES;
+        case TOURNAMENT_NO_GAMES:
+            return CHESS_NO_GAMES;
+        case TOURNAMENT_ENDED:
+            return CHESS_TOURNAMENT_ENDED;
+        case TOURNAMENT_SUCCESS:
+            return CHESS_SUCCESS;
+        default: // Shouldn't get here
+            return CHESS_SUCCESS;
+    }
+
+}
+
+
 // Checks if a player plays in a given tournament
 static bool isPlayerPlayingInTournament(ChessSystem chess, int player_id, int tournament_id)
 {
@@ -176,13 +210,14 @@ static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player
                             Player second_player_struct, Winner winner, int play_time,
                             int amount_of_new_players, int max_games_per_player)
 {
-    ChessResult new_game_result =  tournamentAddGame(tournament, playerGetID(first_player_struct),
+    TournamentResult new_game_result =  tournamentAddGame(tournament, playerGetID(first_player_struct),
                         playerGetID(second_player_struct), winner, play_time, amount_of_new_players);
     
-    if (new_game_result != CHESS_SUCCESS)
+    if (new_game_result != TOURNAMENT_SUCCESS)
     {
-        return new_game_result;
+        return translateTournamentResultToChessResult(new_game_result);
     }
+    
     int new_game_id = tournamentGetSizeGames(tournament) - 1;
     Game new_game = tournamentGetGame(tournament, new_game_id);
 
@@ -698,7 +733,7 @@ ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
     }
     
     int tournament_winner = ChessTournamentCalculateWinner(chess, tournament_id);
-    return tournamentEnd(tournament, tournament_winner);
+    return translateTournamentResultToChessResult(tournamentEnd(tournament, tournament_winner));
 
 }
 

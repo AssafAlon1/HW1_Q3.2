@@ -26,12 +26,12 @@ void gameTests()
     assert(gameGetTournamentID(game1) == 1);
     assert(gameGetPlayTime(game1) == 300);
 
-    assert(gameRemovePlayer(NULL, 11) == CHESS_NULL_ARGUMENT);
-    assert(gameRemovePlayer(game1, 13) == CHESS_PLAYER_NOT_EXIST);
-    assert(gameRemovePlayer(game1, 11) == CHESS_SUCCESS);
+    assert(gameRemovePlayer(NULL, 11) == GAME_NULL_ARGUMENT);
+    assert(gameRemovePlayer(game1, 13) == GAME_PLAYER_NOT_EXIST);
+    assert(gameRemovePlayer(game1, 11) == GAME_SUCCESS);
 
     assert(gameGetIdOfWinner(game1) == 12);
-    assert(gameRemovePlayer(game1, 12) == CHESS_SUCCESS);
+    assert(gameRemovePlayer(game1, 12) == GAME_SUCCESS);
     assert(gameGetIdOfWinner(game1) == DELETED_PLAYER);
 
     gameDestroy(game1);
@@ -53,13 +53,13 @@ void gameTests()
     assert(gameGetIdOfWinner(game2_2) == INVALID_PLAYER);
     assert(gameGetTournamentID(game2_2) == 2);
     assert(gameGetPlayTime(game2_2) == 15000);
-    assert(gameRemovePlayer(game2_2, 21) == CHESS_SUCCESS);
+    assert(gameRemovePlayer(game2_2, 21) == GAME_SUCCESS);
     assert(gameGetIdOfWinner(game2) == INVALID_PLAYER);
     assert(gameGetIdOfWinner(game2_2) == 22);
     gameDestroy(game2_2);
     game2_2 = NULL;
 
-    assert(gameRemovePlayer(game2, 21) == CHESS_SUCCESS);
+    assert(gameRemovePlayer(game2, 21) == GAME_SUCCESS);
     assert(gameGetIdOfWinner(game2) == 22);
 
     Game game3 = gameCopy(game2);
@@ -289,9 +289,9 @@ void tournamentTests()
     assert(tournamentGetWinner(tour1) == INVALID_PLAYER);
     assert(strcmp(tournamentGetLocation(tour1), "Russia") == 0);
 
-    assert(tournamentAddGame(tour1, 1001, 1002, FIRST_PLAYER, 300, 2) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour1, 1001, 1003, FIRST_PLAYER, 303, 1) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour1, 1002, 1003, DRAW,         300, 0) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour1, 1001, 1002, FIRST_PLAYER, 300, 2) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour1, 1001, 1003, FIRST_PLAYER, 303, 1) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour1, 1002, 1003, DRAW,         300, 0) == TOURNAMENT_SUCCESS);
     assert(my_abs(tournamentGetAverageGameTime(tour1) - 301) < eps);
     assert(tournamentGetLongestGameTime(tour1) == 303);
     assert(tournamentGetSizeGames(tour1) == 3);
@@ -308,19 +308,19 @@ void tournamentTests()
     printf(">>TRNMNT Running extra tests tour2...");
     Tournament tour2 = tournamentCreate(2, 3, "Israel home");
     assert(tour2 != NULL);
-    assert(tournamentAddGame(tour2, 1001, 1002, FIRST_PLAYER, 1000, 2) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour2, 1001, 1003, FIRST_PLAYER, 900, 1) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour2, 1002, 1003, DRAW,         800, 0) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour2, 1004, 1001, FIRST_PLAYER, 700, 1) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour2, 1004, 1002, FIRST_PLAYER, 600, 0) == CHESS_SUCCESS);
-    assert(tournamentAddGame(tour2, 1004, 1003, FIRST_PLAYER, 500, 0) == CHESS_SUCCESS);
+    assert(tournamentAddGame(tour2, 1001, 1002, FIRST_PLAYER, 1000, 2) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour2, 1001, 1003, FIRST_PLAYER, 900, 1) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour2, 1002, 1003, DRAW,         800, 0) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1001, FIRST_PLAYER, 700, 1) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1002, FIRST_PLAYER, 600, 0) == TOURNAMENT_SUCCESS);
+    assert(tournamentAddGame(tour2, 1004, 1003, FIRST_PLAYER, 500, 0) == TOURNAMENT_SUCCESS);
 
     assert(my_abs(tournamentGetAverageGameTime(tour2) - 750) < eps);
     assert(tournamentGetLongestGameTime(tour2) == 1000);
     assert(tournamentGetSizeGames(tour2) == 6);
     assert(tournamentGetSizePlayers(tour2) == 4);
 
-    assert(tournamentAddGame(tour2, 1004, 1004, FIRST_PLAYER, 500, 1) == CHESS_INVALID_ID);
+    assert(tournamentAddGame(tour2, 1004, 1004, FIRST_PLAYER, 500, 1) == TOURNAMENT_INVALID_ID);
     assert(my_abs(tournamentGetAverageGameTime(tour2) - 750) < eps);
     assert(tournamentGetLongestGameTime(tour2) == 1000);
     assert(tournamentGetSizeGames(tour2) == 6);

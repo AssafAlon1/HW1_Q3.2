@@ -55,16 +55,16 @@ Game gameCopy(Game game)
 }
 
 
-ChessResult gameRemovePlayer(Game game, int player_id)
+GameResult gameRemovePlayer(Game game, int player_id)
 {
     if (game == NULL)
     {
-        return CHESS_NULL_ARGUMENT;
+        return GAME_NULL_ARGUMENT;
     }
 
     if (!gameisPlayerInGame(game, player_id))
     {
-        return CHESS_PLAYER_NOT_EXIST;
+        return GAME_PLAYER_NOT_EXIST;
     }
 
     // Locate the player to remove and update values accordingly
@@ -78,7 +78,7 @@ ChessResult gameRemovePlayer(Game game, int player_id)
         game->second_player = DELETED_PLAYER;
         game -> winner      = FIRST_PLAYER;
     }
-    return CHESS_SUCCESS;
+    return GAME_SUCCESS;
 }
 
 int gameGetIdOfWinner(Game game)

@@ -4,9 +4,9 @@
 #include "map.h"
 #include "mapUtil.h"
 #include "tournament.h"
-#include "player.h"
 #include "string.h"
-#include <limits.h>
+//#include "player.h"
+//#include <limits.h>
 
 
 struct tournament_t {
@@ -198,27 +198,27 @@ Tournament tournamentCopy(Tournament tournament)
 }
 
 
-ChessResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
+TournamentResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
                               Winner winner, int play_time, int amount_of_new_players)
 {
     if (tournament == NULL)
     {
-        return CHESS_NULL_ARGUMENT;
+        return TOURNAMENT_NULL_ARGUMENT;
     }
     
     if (first_player <= 0 || second_player <= 0 || first_player == second_player)
     {
-        return CHESS_INVALID_ID;
+        return TOURNAMENT_INVALID_ID;
     }
 
     if (play_time <= 0)
     {
-        return CHESS_INVALID_PLAY_TIME;
+        return TOURNAMENT_INVALID_PLAY_TIME;
     }
 
     if (tournament->winner != INVALID_PLAYER)
     {
-        return CHESS_TOURNAMENT_ENDED;
+        return TOURNAMENT_ENDED;
     }
 
     //assert game is valid
@@ -229,7 +229,7 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player, int secon
     
     if (new_game == NULL)
     {
-        return CHESS_OUT_OF_MEMORY;
+        return TOURNAMENT_OUT_OF_MEMORY;
     }
 
     mapPut(tournament->games, &(tournament->current_game_id), new_game);
@@ -243,26 +243,26 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player, int secon
     tournament->total_game_time   += play_time;
     tournament->amount_of_players += amount_of_new_players;
 
-    return CHESS_SUCCESS;
+    return TOURNAMENT_SUCCESS;
 }
 
 
-ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[])
+TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[])
 {
     // Input verification
     if (tournament == NULL || game_ids == NULL)
     {
-        return CHESS_NULL_ARGUMENT;
+        return TOURNAMENT_NULL_ARGUMENT;
     }
 
     if (player_id <= 0)
     {
-        return CHESS_INVALID_ID;
+        return TOURNAMENT_INVALID_ID;
     }
     
     if (tournament->winner != INVALID_PLAYER)
     {
-        return CHESS_TOURNAMENT_ENDED;
+        return TOURNAMENT_ENDED;
     }
 
 
@@ -277,32 +277,33 @@ ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int gam
         Game game = mapGet(tournament->games, &game_ids[i]);
         if (game == NULL)
         {
-            return CHESS_INVALID_ID; // NEVER GET HERE?????
+            return TOURNAMENT_INVALID_ID; // NEVER GET HERE?????
         }
 
         gameRemovePlayer(game, player_id);
+
     }
 
-    return CHESS_SUCCESS;
+    return TOURNAMENT_SUCCESS;
 }
 
 
-ChessResult tournamentEnd (Tournament tournament, int winner_id)
+TournamentResult tournamentEnd (Tournament tournament, int winner_id)
 {
     if (tournament == NULL)
     {
-        return CHESS_NULL_ARGUMENT;
+        return TOURNAMENT_NULL_ARGUMENT;
     }
 
     // Checks if there were games played in the tournament
     if (tournament->current_game_id == 0)
     {
-        return CHESS_NO_GAMES;
+        return TOURNAMENT_NO_GAMES;
         
     }
     
     tournament->winner = winner_id;
-    return CHESS_SUCCESS;
+    return TOURNAMENT_SUCCESS;
 }
 
 

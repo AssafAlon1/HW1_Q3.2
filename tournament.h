@@ -7,21 +7,21 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "chessSystem.h"
 #include "game.h"
 
-// typedef enum {
-//     TOURNAMENT_OUT_OF_MEMORY,
-//     TOURNAMENT_NULL_ARGUMENT,
-//     TOURNAMENT_INVALID_ID,
-//     TOURNAMENT_INVALID_LOCATION,
-//     TOURNAMENT_INVALID_MAX_GAMES,
-//     TOURNAMENT_GAME_ALREADY_EXISTS,
-//     TOURNAMENT_INVALID_PLAY_TIME,
-//     TOURNAMENT_EXCEEDED_GAMES,
-//     TOURNAMENT_ENDED,
-//     TOURNAMENT_SUCCESS
-// } TournamentResult ;
+typedef enum {
+    TOURNAMENT_OUT_OF_MEMORY,
+    TOURNAMENT_NULL_ARGUMENT,
+    TOURNAMENT_INVALID_ID,
+    TOURNAMENT_INVALID_LOCATION,
+    TOURNAMENT_INVALID_MAX_GAMES,
+    TOURNAMENT_GAME_ALREADY_EXISTS,
+    TOURNAMENT_INVALID_PLAY_TIME,
+    TOURNAMENT_EXCEEDED_GAMES,
+    TOURNAMENT_NO_GAMES,
+    TOURNAMENT_ENDED,
+    TOURNAMENT_SUCCESS
+} TournamentResult ;
 
 /** Type for representing a tournament that will be managed by a Chess System */
 typedef struct tournament_t *Tournament;
@@ -73,13 +73,14 @@ Tournament tournamentCopy(Tournament tournament);
  * @param amount_of_new_players - 0/1/2 - the amount of players that this is their first game in the tournament
  * 
  * @return
- *     CHESS_NULL_ARGUMENT - if tournament is NULL.
- *     CHESS_INVALID_ID - if either the players or the winner is invalid.
- *     CHESS_GAME_ALREADY_EXIST - if there is already a game in the tournament with the same two players.
- *     CHESS_INVALID_PLAY_TIME - if the play time is negative.
- *     CHESS_SUCCESS - if game was added successfully.
+ *     TOURNAMENT_NULL_ARGUMENT - if tournament is NULL.
+ *     TOURNAMENT_INVALID_ID - if either the players or the winner is invalid.
+ *     TOURNAMENT_GAME_ALREADY_EXIST - if there is already a game in the tournament with the same two players.
+ *     TOURNAMENT_INVALID_PLAY_TIME - if the play time is negative.
+ *     TOURNAMENT_OUT_OF_MEMORY    - if there was an allocation issue
+ *     TOURNAMENT_SUCCESS - if game was added successfully.
  */
-ChessResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
+TournamentResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
                               Winner winner, int play_time, int amount_of_new_players);
 
 
@@ -95,12 +96,11 @@ ChessResult tournamentAddGame(Tournament tournament, int first_player, int secon
  *                    array's size is max_games_per_player, none games are INVALID_GAME_ID
  *
  * @return
- *     CHESS_NULL_ARGUMENT - if tournament is NULL.
- *     CHESS_INVALID_ID - if the player ID number is invalid.
- *     CHESS_PLAYER_NOT_EXIST - if the player does not play in the tournament.
- *     CHESS_SUCCESS - if player was removed successfully.
+ *     TOURNAMENT_NULL_ARGUMENT - if tournament is NULL.
+ *     TOURNAMENT_INVALID_ID - if the player ID number is invalid.
+ *     TOURNAMENT_SUCCESS - if player was removed successfully.
  */
-ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[]);
+TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[]);
 
 
 
@@ -113,11 +113,11 @@ ChessResult tournamentRemovePlayer(Tournament tournament, int player_id, int gam
  * @param winner_id  - the id of the winner in the tournament
  *
  * @return
- *     CHESS_NULL_ARGUMENT - if Tournament is NULL.
- *     CHESS_SUCCESS - if tournament was ended successfully.
- *     CHESS_TOURNAMENT_ENDED - if the tournament has already ended
+ *     TOURNAMENT_NULL_ARGUMENT - if Tournament is NULL.
+ *     TOURNAMENT_SUCCESS - if tournament was ended successfully.
+ *     TOURNAMENT_ENDED - if the tournament has already ended
  */
-ChessResult tournamentEnd (Tournament tournament, int winner_id);
+TournamentResult tournamentEnd (Tournament tournament, int winner_id);
 
 
 
