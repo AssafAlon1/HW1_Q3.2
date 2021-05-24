@@ -14,8 +14,10 @@ struct chess_system_t {
     Map players;
 };
 
-
+//==============================================================//
 //================== INTERNAL FUNCTIONS START ==================//
+//==============================================================//
+
 
 // Translate error code from tournament to chess
 static ChessResult translateTournamentResultToChessResult(TournamentResult result)
@@ -272,10 +274,10 @@ static void chessRemovePlayerUpdateGameResult(ChessSystem chess, int tournament_
 {
     // Get game, get opponent, update outcome
     Tournament tournament = mapGet(chess->tournaments, &tournament_id);
-    Game current_game = tournamentGetGame(tournament, game_id);
-    int opponent_id   = gameGetPlayersOpponent(current_game, player_id);
-    Player opponent   = mapGet(chess->players, &opponent_id);
-    int game_winner   = gameGetIdOfWinner(current_game);
+    Game current_game     = tournamentGetGame(tournament, game_id);
+    int opponent_id       = gameGetPlayersOpponent(current_game, player_id);
+    Player opponent       = mapGet(chess->players, &opponent_id);
+    int game_winner       = gameGetIdOfWinner(current_game);
     if (game_winner  == opponent_id)
     {
         return;
@@ -286,7 +288,7 @@ static void chessRemovePlayerUpdateGameResult(ChessSystem chess, int tournament_
         return;
     }
 
-    playerUpdateResultsAfterOpponentDeletion(opponent, tournament_id, LOSE_TO_WIN);
+    playerUpdateResultsAfterOpponentDeletion(opponent, tournament_id, LOSS_TO_WIN);
 }
 
 
@@ -409,8 +411,7 @@ static int ChessTournamentComparePlayerWithWinner (ChessSystem chess, int tourna
         return player_id;
     }
     
-    return winner_id > player_id ? winner_id : player_id;
-    
+    return winner_id < player_id ? winner_id : player_id;
 }
 
 
@@ -434,8 +435,8 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
         return INVALID_PLAYER;
     }
 
-    int winner_id = *player_iterator;
-    int winner_score     = chessCalculatePlayerScore(chess, winner_id, tournament_id);
+    int winner_id     = *player_iterator;
+    int winner_score  = chessCalculatePlayerScore(chess, winner_id, tournament_id);
     //free free freefreefreefreefree
     while (player_iterator)
     {
@@ -461,8 +462,9 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
     return winner_id;
 }
 
+//============================================================//
 //================== INTERNAL FUNCTIONS END ==================//
-
+//============================================================//
 
 ChessSystem chessCreate()
 {
@@ -510,7 +512,7 @@ void chessDestroy(ChessSystem chess)
 ChessResult chessAddTournament (ChessSystem chess, int tournament_id,
                                 int max_games_per_player, const char* tournament_location)
 {
-    if (chess == NULL)
+    if (chess == NULL || tournament_location == NULL)
     {
         return CHESS_NULL_ARGUMENT;
     }
@@ -700,6 +702,7 @@ ChessResult chessRemovePlayer(ChessSystem chess, int player_id)
         tournamentRemovePlayer(tournament, player_id, game_ids);
     }
     
+    mapRemove(chess->players, &player_id);
     return CHESS_SUCCESS;
 }
 
@@ -738,6 +741,11 @@ ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
 
 double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessResult* chess_result)
 {
+    if (chess_result == NULL)
+    {
+        return -1;
+    }
+
     if (chess == NULL)
     {
         *chess_result = CHESS_NULL_ARGUMENT;
@@ -761,7 +769,117 @@ double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessRes
     
 }
 
-//ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
+
+// Given a chess system, 2 arrays and their lengths, the function will get player
+// information (id & level) and write it to the given arrays
+static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_players,
+                                                 int* player_id, double* player_level)
+{
+    if (chess == NULL || player_id == NULL || player_level == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+
+    int *player_iterator = mapGetFirst(chess->players);
+    int current_index = 0;
+    while (player_iterator)
+    {
+        player_id[current_index]    = *player_iterator;
+        player_level[current_index] = playerGetLevel(mapGet(chess->players, player_iterator));
+        player_iterator             = mapGetNext(chess->players);
+        current_index++;
+    }
+
+    return CHESS_SUCCESS;
+}
+
+
+// compares two doubles
+static int chessDoubleCompare (double num1, double num2)
+{
+    if (num1 - num2 < 0.00001 && num2 - num1 < 0.00001)
+    {
+        return 0;
+    }
+    if (num1 > num2)
+    {
+        return 1;
+    }
+
+    return -1;
+}
+
+
+// Sorts 2 arrays, one of them being sorted in a regular fashion, the other one being
+// sorted according to the first one (values from same cells in 2 arrays are linked)
+static void sortLinkedArrays (double referenced_array[], int second_array[], int array_size)
+{
+    for (int i = 0 ; i < array_size ; i++)
+    {
+        for (int j = 0 ; j < array_size - i - 1 ; j++)
+        {
+            int comparasion = chessDoubleCompare(referenced_array[j], referenced_array[j+1]);
+            if (comparasion < 0 || (comparasion == 0 && second_array[j] > second_array[j+1]))
+            {
+                double temp_double   = referenced_array[j];
+                referenced_array[j]   = referenced_array[j+1];
+                referenced_array[j+1] = temp_double;
+
+                int temp_int = second_array[j];
+                second_array[j]   = second_array[j+1];
+                second_array[j+1] = temp_int;
+            }
+        }
+    }
+}
+
+// static void PrintHelpPlease (double lvl[], int id[], int size)
+// {
+//     for (int i = 0 ; i < size ; i++)
+//     {
+//         printf("ID: %d,  LVL: %.2f\n", id[i], lvl[i]);
+//     }
+// }
+
+ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
+{
+    if (chess == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+    
+    int amount_of_players = mapGetSize(chess->players);
+    int *player_id_array    = malloc(amount_of_players*sizeof(int));
+    if (player_id_array == NULL)
+    {
+        return CHESS_OUT_OF_MEMORY;
+    }
+    double *player_level_array = malloc(amount_of_players*sizeof(double));
+    if (player_level_array == NULL)
+    {
+        free(player_id_array);
+        return CHESS_OUT_OF_MEMORY;
+    }
+
+    buildPlayerIdAndLevelArrays(chess, amount_of_players, player_id_array, player_level_array);
+    sortLinkedArrays(player_level_array, player_id_array, amount_of_players);
+
+    for (int i = 0 ; i < amount_of_players ; i++)
+    {
+        int result = fprintf(file, "%d %.2f\n", player_id_array[i], player_level_array[i]);
+        if (result < 0)
+        {
+            free(player_level_array);
+            free(player_id_array);
+            return CHESS_SAVE_FAILURE;
+        }
+    }
+
+    free(player_level_array);
+    free(player_id_array);
+
+    return CHESS_SUCCESS;
+}
 
 
 ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
@@ -788,6 +906,7 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
         bool print_result = tournamentPrintStatsToFile(tournament, output_file);
         if (print_result == false)
         {
+            fclose(output_file);
             return CHESS_SAVE_FAILURE;
         }
         tournament_id_iterator = mapGetNext(chess->tournaments);
@@ -799,7 +918,6 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
         return CHESS_NO_TOURNAMENTS_ENDED;
     }
 
-    // SAVE FAILURE???????????
     return CHESS_SUCCESS;
 }
 

@@ -62,6 +62,11 @@ GameResult gameRemovePlayer(Game game, int player_id)
         return GAME_NULL_ARGUMENT;
     }
 
+    if (player_id <= 0)
+    {
+        return GAME_INVALID_ID;
+    }
+
     if (!gameisPlayerInGame(game, player_id))
     {
         return GAME_PLAYER_NOT_EXIST;
@@ -113,13 +118,17 @@ int gameGetID(Game game)
 
 int gameGetPlayTime(Game game)
 {
+    if (game == NULL)
+    {
+        return -1;
+    }
     return game->play_time;
 }
 
 
 bool gameisPlayerInGame(Game game, int player_id)
 {
-    if (game == NULL)
+    if (game == NULL || player_id <= 0)
     {
         return false;
     }
@@ -133,6 +142,10 @@ bool gameisPlayerInGame(Game game, int player_id)
 
 int gameGetTournamentID(Game game)
 {
+    if (game == NULL)
+    {
+        return -1;
+    }
     return game->tournament_id;
 }
 

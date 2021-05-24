@@ -4,6 +4,8 @@
         "player.h": "c",
         "game.h": "c",
         "chesssystem.h": "c",
-        "map.h": "c"
+        "map.h": "c",
+        "array": "c",
+        "string.h": "c"
     }
 }

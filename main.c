@@ -359,17 +359,14 @@ void tournamentTests()
 
 void chessTests()
 {
-    printf("##CHESS Running basic tests chess1      [  ]\n");
-
-    
     // Checking NULL handling
     printf(">>CHESS verifying NULL handling...");
 
-    //assert(chessCalculateAveragePlayTime(NULL, 4, NULL) == CHESS_NULL_ARGUMENT);
+    assert(my_abs(chessCalculateAveragePlayTime(NULL, 4, NULL) + 1) < eps);
     assert(chessEndTournament(NULL, 3) == CHESS_NULL_ARGUMENT);
     assert(chessRemovePlayer(NULL, 101) == CHESS_NULL_ARGUMENT);
-    //assert(chessSavePlayersLevels(NULL, stdout) == CHESS_NULL_ARGUMENT);
-    //assert(chessSaveTournamentStatistics(NULL, "C:\\Temp\\file.txt") == CHESS_NULL_ARGUMENT);
+    assert(chessSavePlayersLevels(NULL, stdout) == CHESS_NULL_ARGUMENT);
+    assert(chessSaveTournamentStatistics(NULL, "./output/actual/basic1.txt") == CHESS_NULL_ARGUMENT);
     assert(chessAddGame(NULL, 1, 2, 3, FIRST_PLAYER, 300) == CHESS_NULL_ARGUMENT);
     assert(chessAddTournament(NULL, 101, 5, "Nowhere") == CHESS_NULL_ARGUMENT);
     assert(chessAddTournament(NULL, 101, 5, "INVALID5NAME*") == CHESS_NULL_ARGUMENT);
@@ -422,7 +419,7 @@ void chessTests()
     assert(chessEndTournament(chess1, 1) == CHESS_SUCCESS);
     assert(chessEndTournament(chess1, 1) == CHESS_TOURNAMENT_ENDED);
     assert(chessAddGame(chess1, 1, 1001, 1002, FIRST_PLAYER, 600) == CHESS_TOURNAMENT_ENDED);
-    assert(chessSaveTournamentStatistics(chess1, "C:\\Temp\\test.txt") == CHESS_SUCCESS);
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/basic2.txt") == CHESS_SUCCESS);
     // tournament 1 has 1 match. output file should look like:
     // 1001 ; 600 ; 600.00 ; Turkey ; 1 ; 2
 
@@ -434,9 +431,12 @@ void chessTests()
     assert(chessAddGame(chess1, 2, 1004, 1002, FIRST_PLAYER, 1) == CHESS_SUCCESS);
     assert(chessAddGame(chess1, 2, 1002, 1005, SECOND_PLAYER, 2) == CHESS_SUCCESS);
     assert(chessAddGame(chess1, 2, 1003, 1004, FIRST_PLAYER, 1) == CHESS_SUCCESS);
-    assert(chessAddGame(chess1, 2, 1005, 1004, FIRST_PLAYER, 1) == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1005, 1004, SECOND_PLAYER, 1) == CHESS_SUCCESS);
+    FILE *file = fopen("./output/actual/basic3.txt", "w");
+    assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
+    fclose(file);
     assert(chessEndTournament(chess1, 2) == CHESS_SUCCESS);
-    assert(chessSaveTournamentStatistics(chess1, "C:\\Temp\\test.txt") == CHESS_SUCCESS);
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/") == CHESS_SUCCESS);
     // 1001: 3
     // 1002: 2
     // 1003: 4
@@ -446,8 +446,10 @@ void chessTests()
 
 
     chessDestroy(chess1);
-
     printf("    [OK]\n");
+
+
+    
 }
 
 int main ()

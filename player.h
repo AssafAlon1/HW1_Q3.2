@@ -1,11 +1,11 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#define INVALID_PLAYER -1
+#define INVALID_PLAYER -3
 #define DELETED_PLAYER -2
 #define PLAYER_INVALID_INPUT -1
 
-#define LOSE_TO_WIN 11
+#define LOSS_TO_WIN 11
 #define DRAW_TO_WIN 12
 
 #define WIN_WEIGHT 6

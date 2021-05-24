@@ -394,7 +394,7 @@ bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, 
         player->total_wins  += 1;
     }
 
-    if (outcome_change == LOSS_WEIGHT)
+    if (outcome_change == LOSS_TO_WIN)
     {
         bool result = playerInTournamentUpdateLossToWin(player_in_tournament);
         if (!result)
