@@ -784,12 +784,19 @@ static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_
     int current_index = 0;
     while (player_iterator)
     {
+        if (playerGetTotalGames(mapGet(chess->players, player_iterator)) == 0)
+        {
+            player_id[current_index]    = -1;
+            player_level[current_index] = -11;
+            player_iterator = mapGetNext(chess->players);
+            continue;
+        }
         player_id[current_index]    = *player_iterator;
         player_level[current_index] = playerGetLevel(mapGet(chess->players, player_iterator));
         player_iterator             = mapGetNext(chess->players);
         current_index++;
     }
-
+    
     return CHESS_SUCCESS;
 }
 
@@ -866,6 +873,10 @@ ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
 
     for (int i = 0 ; i < amount_of_players ; i++)
     {
+        if (player_id_array[i] < 0)
+        {
+            break;
+        }
         int result = fprintf(file, "%d %.2f\n", player_id_array[i], player_level_array[i]);
         if (result < 0)
         {

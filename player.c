@@ -275,13 +275,8 @@ PlayerResult playerRemoveTournament(Player player, int tournament_id)
     player->total_game_time -= playerInTournamentGetTotalTime(player_in_tournament);
     
     // Cleanup
-    MapResult remove_result = mapRemove(player->player_in_tournaments, &tournament_id);
+    mapRemove(player->player_in_tournaments, &tournament_id);
     player_in_tournament    = NULL;
-
-    if (remove_result != MAP_SUCCESS)
-    {
-        return PLAYER_GENERAL_ERROR; //Shouldn't get here
-    }
 
     return PLAYER_SUCCESS;
 }

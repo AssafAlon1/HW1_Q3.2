@@ -86,6 +86,7 @@ PlayerResult playerAddGame(Player player, Game game);
  * @param player - the player
  * @return
  *      The amount of games the player has played
+ *      PLAYER_INVALID_INPUT - if the input is not valid
  */
 int playerGetTotalGames(Player player);
 
@@ -97,6 +98,7 @@ int playerGetTotalGames(Player player);
  * @param player - the player
  * @return
  *      The average time of a game the player has played
+ *      PLAYER_INVALID_INPUT - if the input is not valid
  */
 double playerGetFinishedGamesAverageTime(Player player);
 
@@ -108,6 +110,7 @@ double playerGetFinishedGamesAverageTime(Player player);
  * @param player - the player
  * @return
  *      The level of said player
+ *      PLAYER_INVALID_INPUT - if the input is not valid
  */
 double playerGetLevel(Player player);
 
@@ -131,6 +134,7 @@ PlayerResult playerRemoveTournament(Player player, int tournament_id);
  * @param player - the player
  * @return
  *      The ID of said player
+ *      PLAYER_INVALID_INPUT - if the input is not valid
  */
 int playerGetID(Player player);
 
@@ -156,6 +160,7 @@ bool playerIsPlayingInTournament(Player player, int tournament_id);
  * @param tournament_id - the id of the tournamnet
  * @return
  *      the array of game IDs the player played in the tournament
+ *      NULL - if the player or player in tournament is NULL
  */
 int* playerGetGameIdsInTournament(Player player, int tournament_id);
 
@@ -186,16 +191,6 @@ bool playerCanPlayMoreGamesInTournament(Player player, int tournament_id);
  *      PLAYER_SUCCESS       - if the tournament was added successfully
  */
 PlayerResult playerAddTournament(Player player, int tournament_id, int max_games_per_player);
-
-
-// /**
-//  * playerGetPlayerInTournaments: Returns a map of the player in tournament records
-//  *
-//  * @param player - the player
-//  * @return
-//  *      a pointer to a map that contains the player in tournament records
-//  */
-// Map* playerGetPlayerInTournaments(Player player);
 
 
 /**
@@ -233,26 +228,37 @@ int *playerGetFirstTournamentID(Player player);
 */
 int *playerGetNextTournamentID(Player player);
 
-
+/**
+*  playerGetWinsInTournament: return the total wins for the player in the tournament
+* @param player - the player that played in the tournament
+* @param tournament_id - - the relevant tournament
+* @return
+*   the amout of wins the player has in the tournament
+*   PLAYER_INVALID_INPUT - if the player is NULL
+*/
 int playerGetWinsInTournament(Player player, int tournament_id);
 
+
+/**
+*  playerGetDrawsInTournament: return the total draws for the player in the tournament
+* @param player - the player that played in the tournament
+* @param tournament_id - - the relevant tournament
+* @return
+*   the amout of draws the player has in the tournament
+*   PLAYER_INVALID_INPUT - if the player is NULL
+*/
 int playerGetDrawsInTournament(Player player, int tournament_id);
 
+
+/**
+*  playerGetLossesInTournament: return the total losses for the player in the tournament
+* @param player - the player that played in the tournament
+* @param tournament_id - - the relevant tournament
+* @return
+*   the amout of losses the player has in the tournament
+*   PLAYER_INVALID_INPUT - if the player is NULL
+*/
 int playerGetLossesInTournament(Player player, int tournament_id);
-
-
-// /**
-//  * playerNewTournament: register a new tournament for the player
-//  *
-//  * @param player - the player that has played said game
-//  * @param tournament_id   - the id of the tournament needed to be updated
-//  * @param max_games_per_player - the maximum amount of games allowed on the tournament
-//  * @return
-//  *      PLAYER_NULL_ARGUMENT - if player is NULL
-//  *      PLAYER_OUT_OF_MEMORY - if an allocation failed
-//  *      PLAYER_SUCCESS       - in the case of success
-//  */
-// PlayerResult playerNewTournament(Player player, int tournament_id, int max_games_per_player);
 
 
 #endif

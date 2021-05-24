@@ -206,7 +206,7 @@ int playerInTournamentGetWins (PlayerInTournament player_in_tournament)
 {
     if (player_in_tournament == NULL)
     {
-        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+        return 0;
     }
     return player_in_tournament->wins;
 }
@@ -215,7 +215,7 @@ int playerInTournamentGetDraws (PlayerInTournament player_in_tournament)
 {
     if (player_in_tournament == NULL)
     {
-        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+        return 0;
     }
 
     return player_in_tournament->draws;
@@ -225,7 +225,7 @@ int playerInTournamentGetLosses (PlayerInTournament player_in_tournament)
 {
     if (player_in_tournament == NULL)
     {
-        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+        return 0;
     }
 
     return player_in_tournament->losses;
@@ -264,6 +264,10 @@ int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament)
 
 bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament)
 {
+    if(player_in_tournament == NULL)
+    {
+        return false;
+    }
     return playerInTournamentGetTotalGames(player_in_tournament) < player_in_tournament->max_games_per_player;
 }
 

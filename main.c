@@ -436,7 +436,7 @@ void chessTests()
     assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
     fclose(file);
     assert(chessEndTournament(chess1, 2) == CHESS_SUCCESS);
-    assert(chessSaveTournamentStatistics(chess1, "./output/actual/") == CHESS_SUCCESS);
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/basic4.txt") == CHESS_SUCCESS);
     // 1001: 3
     // 1002: 2
     // 1003: 4
@@ -447,9 +447,96 @@ void chessTests()
 
     chessDestroy(chess1);
     printf("    [OK]\n");
+}
 
 
+void massiveTest()
+{
+    printf(">>FINAL check with massive input...");
+
+    ChessSystem chess1 = chessCreate();
+    assert (chess1 != NULL);
     
+    // Add Tournaments
+    assert(chessAddTournament(chess1, 1, 3, "Chile land") == CHESS_SUCCESS);
+    assert(chessAddTournament(chess1, 2, 10, "Mother russia") == CHESS_SUCCESS);
+    assert(chessAddTournament(chess1, 2, 5, "Mother russia") == CHESS_TOURNAMENT_ALREADY_EXISTS);
+    assert(chessAddTournament(chess1, 3, 5, "Mother Russia") == CHESS_INVALID_LOCATION);
+    assert(chessAddTournament(chess1, 3, 10, "Mother russia") == CHESS_SUCCESS);
+
+    // Add Games
+    assert(chessAddGame(chess1, 1, 1001, 1002, FIRST_PLAYER, 90)    == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1001, 1003, FIRST_PLAYER, 90)    == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1004, 1001, SECOND_PLAYER, 90)   == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1002, 1005, DRAW, 150)           == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1003, 1002, DRAW, 420)           == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1005, 1004, FIRST_PLAYER, 666)   == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1003, 1005, SECOND_PLAYER, 6969) == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1010, 1011, FIRST_PLAYER, 4500)  == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1010, 1012, FIRST_PLAYER, 4499)  == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 1, 1010, 1013, FIRST_PLAYER, 4499)  == CHESS_SUCCESS);
+    
+    // Verify AddGame error handling
+    assert(chessAddGame(chess1, 7, -5, 1001,   FIRST_PLAYER, -4) == CHESS_INVALID_ID);
+    assert(chessAddGame(chess1, 7, 5, 1001,    FIRST_PLAYER, -4) == CHESS_TOURNAMENT_NOT_EXIST);
+    assert(chessAddGame(chess1, 1, 1011, 1011, FIRST_PLAYER, -4) == CHESS_INVALID_ID);
+    assert(chessAddGame(chess1, 1, 1010, 1011, FIRST_PLAYER, -4) == CHESS_GAME_ALREADY_EXISTS);
+    assert(chessAddGame(chess1, 1, 1010, 1015, FIRST_PLAYER, -4) == CHESS_INVALID_PLAY_TIME);
+    assert(chessAddGame(chess1, 1, 1010, 1015, FIRST_PLAYER,  4) == CHESS_EXCEEDED_GAMES);
+
+    // Output to file, verify EndTournament error handling
+    FILE *file = fopen("./output/actual/levels1.txt", "w");
+    assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
+    fclose(file);
+
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/tournaments0.txt") == CHESS_NO_TOURNAMENTS_ENDED);
+    assert(chessEndTournament(chess1, 1) == CHESS_SUCCESS);
+    assert(chessEndTournament(chess1, 1) == CHESS_TOURNAMENT_ENDED);
+    assert(chessEndTournament(chess1, 2) == CHESS_NO_GAMES);
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/tournaments1.txt") == CHESS_SUCCESS);
+
+    // Verify AddGame error handling - TournamentEnded
+    assert(chessAddGame(chess1, 7, -5, 1001,   FIRST_PLAYER, -4) == CHESS_INVALID_ID);
+    assert(chessAddGame(chess1, 7, 5, 1001,    FIRST_PLAYER, -4) == CHESS_TOURNAMENT_NOT_EXIST);
+    assert(chessAddGame(chess1, 1, 1011, 1011, FIRST_PLAYER, -4) == CHESS_INVALID_ID);
+    assert(chessAddGame(chess1, 1, 1010, 1017, FIRST_PLAYER, -4) == CHESS_TOURNAMENT_ENDED);
+
+
+    // Verify player remove
+    assert(chessRemovePlayer(chess1, 5) == CHESS_PLAYER_NOT_EXIST);
+    assert(chessRemovePlayer(chess1, 1001) == CHESS_SUCCESS);
+
+    // Levels shouldn't be affected
+    file = fopen("./output/actual/levels2.txt", "w");
+    assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
+    fclose(file);
+
+    // Second tournament
+    assert(chessAddGame(chess1, 2, 1001, 1002, FIRST_PLAYER, 90)    == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1001, 1003, FIRST_PLAYER, 90)    == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1004, 1001, SECOND_PLAYER, 90)   == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1002, 1005, DRAW, 150)           == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1003, 1002, DRAW, 420)           == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1005, 1004, FIRST_PLAYER, 666)   == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1003, 1005, SECOND_PLAYER, 6969) == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1010, 1011, FIRST_PLAYER, 4500)  == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1010, 1012, FIRST_PLAYER, 4499)  == CHESS_SUCCESS);
+    assert(chessAddGame(chess1, 2, 1010, 1013, FIRST_PLAYER, 4499)  == CHESS_SUCCESS);
+
+    // Levels shouldn't be affected
+    file = fopen("./output/actual/levels3.txt", "w");
+    assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
+    fclose(file);
+
+    // Levels should change
+    assert(chessRemovePlayer(chess1, 1001) == CHESS_SUCCESS);
+    file = fopen("./output/actual/levels4.txt", "w");
+    assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
+    fclose(file);
+
+    assert(chessSaveTournamentStatistics(chess1, "./output/actual/tournaments2.txt") == CHESS_SUCCESS);
+
+    printf("     [OK]\n");
 }
 
 int main ()
@@ -459,5 +546,6 @@ int main ()
     playerTests();
     tournamentTests();
     chessTests();
+    massiveTest();
     return 0;
 }

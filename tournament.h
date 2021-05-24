@@ -58,6 +58,7 @@ void tournamentDestroy(Tournament tournament);
  * @param tournament - the tournament to copy
  * @return
  *     The coppied tournament
+ *     NULL - if the source tournament is NULL or the allocation failed
  */
 Tournament tournamentCopy(Tournament tournament);
 
@@ -121,18 +122,6 @@ TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, in
 TournamentResult tournamentEnd (Tournament tournament, int winner_id);
 
 
-
-/**
- * tournamentCalculateWinner: The function will calculate the winner of the tournament
- *
- * @param tournament - the tournament
- *
- * @return
- *     the id of the winner
- */
-int tournamentCalculateWinner (Tournament tournament);
-
-
 /**
  * tournamentGetSizePlayers: The function will return the number of unique players
  *                  in a given tournament
@@ -141,6 +130,7 @@ int tournamentCalculateWinner (Tournament tournament);
  *
  * @return
  *     The number of unique players in the tournament
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetSizePlayers (Tournament tournament);
 
@@ -154,6 +144,7 @@ int tournamentGetSizePlayers (Tournament tournament);
  *
  * @return
  *     The number of unique games in the tournament
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetSizeGames (Tournament tournament);
 
@@ -168,6 +159,7 @@ int tournamentGetSizeGames (Tournament tournament);
  *
  * @return
  *     The winner of the tournament
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetWinner(Tournament tournament);
 
@@ -180,6 +172,7 @@ int tournamentGetWinner(Tournament tournament);
  *
  * @return
  *     The location of the tournament
+ *     NULL - if the tournament is NULL
  */
 char* tournamentGetLocation(Tournament tournament);
 
@@ -193,6 +186,7 @@ char* tournamentGetLocation(Tournament tournament);
  *
  * @return
  *     The longest game time of the tournament
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetLongestGameTime(Tournament tournament);
 
@@ -206,6 +200,7 @@ int tournamentGetLongestGameTime(Tournament tournament);
  *
  * @return
  *     The average game time of the tournament
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 double tournamentGetAverageGameTime(Tournament tournament);
 
@@ -229,6 +224,7 @@ bool tournamentValidateLocation(const char *location);
  *
  * @return
  *     the maximum allowed games per player
+ *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetMaxGamesPerPlayer(Tournament tournament);
 
@@ -241,6 +237,7 @@ int tournamentGetMaxGamesPerPlayer(Tournament tournament);
  *
  * @return
  *     The game with the given ID
+ *     NULL - if the tournament is NULL
  */
 Game tournamentGetGame(Tournament tournament, int game_id);
 

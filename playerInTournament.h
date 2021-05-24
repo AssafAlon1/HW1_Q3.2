@@ -50,7 +50,8 @@ void playerInTournamentDestroy(PlayerInTournament player_in_tournament);
  *
  * @param player_in_tournament - the player in tournament to copy
  * @return
- *     The coppied player in tournament
+ *     The coppied player in tournament if the function Succeeded
+ *     if the allocation failed the function return NULL
  */
 PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournament);
 
@@ -79,6 +80,7 @@ PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_
  *
  * @return
  *     The number wins of the player in the tournament
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetWins (PlayerInTournament player_in_tournament);
 
@@ -90,6 +92,7 @@ int playerInTournamentGetWins (PlayerInTournament player_in_tournament);
  *
  * @return
  *     The number draws of the player in the tournament
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetDraws (PlayerInTournament player_in_tournament);
 
@@ -101,6 +104,7 @@ int playerInTournamentGetDraws (PlayerInTournament player_in_tournament);
  *
  * @return
  *     The number losses of the player in the tournament
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetLosses (PlayerInTournament player_in_tournament);
 
@@ -112,6 +116,7 @@ int playerInTournamentGetLosses (PlayerInTournament player_in_tournament);
  *
  * @return
  *     the total time in seconds the player has played
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetTotalTime (PlayerInTournament player_in_tournament);
 
@@ -123,6 +128,7 @@ int playerInTournamentGetTotalTime (PlayerInTournament player_in_tournament);
  *
  * @return
  *     the amount of games player has played
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament);
 
@@ -134,6 +140,7 @@ int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament);
  *
  * @return
  *     the game ID array of said player in tournament
+ *     NULL - if the player in tournament is NULL
  */
 int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament);
 
@@ -145,7 +152,8 @@ int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament);
  *
  * @return
  *     true - if the player can play more games in the tournament
- *     false - if the player cannot play more games in the tournament
+ *     false - if the player cannot play more games in the tournament 
+ *              or the player in tournament is NULL
  */
 bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament);
 
@@ -157,6 +165,7 @@ bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament);
  *
  * @return
  *     the ID of the tournament in which the player plays
+ *     PLAYER_IN_TOURNAMENT_INVALID_INPUT - if the input is not valid
  */
 int playerInTournamentGetTournamentID(PlayerInTournament player_in_tournament);
 
