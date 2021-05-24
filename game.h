@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "chessSystem.h"
+//#include "chessSystem.h"
 
 
 typedef enum {
@@ -17,6 +17,11 @@ typedef enum {
     GAME_SUCCESS
 } GameResult ;
 
+typedef enum {
+    GAME_FIRST_PLAYER,
+    GAME_SECOND_PLAYER,
+    GAME_DRAW
+} GameWinner;
 
 typedef struct game_t *Game;
 
@@ -27,13 +32,13 @@ typedef struct game_t *Game;
  * @param tournament_id - the id of the tournament in which the game is being held
  * @param first_player - the id of the first player
  * @param second_player - the id of the second player
- * @param Winner - the winner of the game
+ * @param GameWinner - the winner of the game
  * @param play_time - the length of the game in seconds
  * 
  * @return A new game in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-Game gameCreate(int tournament_id, int first_player, int second_player, Winner winner, int play_time, int game_id);
+Game gameCreate(int tournament_id, int first_player, int second_player, GameWinner winner, int play_time, int game_id);
 
 
 
@@ -94,28 +99,6 @@ int gameGetIdOfWinner(Game game);
  *     The ID of the game
  */
 int gameGetID(Game game);
-
-
-/**
- * gameGetFirstPlayer: Get the first player of a game
- *
- * @param game - the game that should return the player
- * 
- * @return
- *     first player of said game
- */
-//int gameGetFirstPlayer(Game game);
-
-
-/**
- * gameGetSecondPlayer: Get the second player of a game
- *
- * @param game - the game that should return the player
- * 
- * @return
- *     second player of said game
- */
-//int gameGetSecondPlayer(Game game);
 
 
 

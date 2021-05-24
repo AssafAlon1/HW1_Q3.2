@@ -82,7 +82,7 @@ Tournament tournamentCopy(Tournament tournament);
  *     TOURNAMENT_SUCCESS - if game was added successfully.
  */
 TournamentResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
-                              Winner winner, int play_time, int amount_of_new_players);
+                              GameWinner winner, int play_time, int amount_of_new_players);
 
 
 

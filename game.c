@@ -8,11 +8,11 @@ struct game_t {
     int first_player;
     int second_player;
     int play_time;
-    Winner winner;
+    GameWinner winner;
 };
 
 
-Game gameCreate(int tournament_id, int first_player, int second_player, Winner winner, int play_time, int game_id)
+Game gameCreate(int tournament_id, int first_player, int second_player, GameWinner winner, int play_time, int game_id)
 {
     Game game = malloc(sizeof(*game));
     if (game == NULL)
@@ -71,12 +71,12 @@ GameResult gameRemovePlayer(Game game, int player_id)
     if (player_id == game->first_player)
     {
         game->first_player = DELETED_PLAYER;
-        game->winner       = SECOND_PLAYER;
+        game->winner       = GAME_SECOND_PLAYER;
     }
     else
     {
         game->second_player = DELETED_PLAYER;
-        game -> winner      = FIRST_PLAYER;
+        game -> winner      = GAME_FIRST_PLAYER;
     }
     return GAME_SUCCESS;
 }
@@ -88,12 +88,12 @@ int gameGetIdOfWinner(Game game)
         return -1;
     }
 
-    if (game->winner == FIRST_PLAYER)
+    if (game->winner == GAME_FIRST_PLAYER)
     {
         return game->first_player;
     }
 
-    if (game->winner == SECOND_PLAYER)
+    if (game->winner == GAME_SECOND_PLAYER)
     {
         return game->second_player;
     }

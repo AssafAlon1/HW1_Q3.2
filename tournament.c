@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+
 #include "map.h"
 #include "mapUtil.h"
 #include "tournament.h"
-#include "string.h"
+
 //#include "player.h"
 //#include <limits.h>
 
@@ -181,7 +183,7 @@ Tournament tournamentCopy(Tournament tournament)
 
 
 TournamentResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
-                              Winner winner, int play_time, int amount_of_new_players)
+                              GameWinner winner, int play_time, int amount_of_new_players)
 {
     // Input verification
     if (tournament == NULL)

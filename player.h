@@ -13,7 +13,7 @@
 #define DRAW_WEIGHT 2
 
 #include <stdio.h>
-#include "chessSystem.h"
+//#include "chessSystem.h"
 #include "game.h"
 #include "map.h"
 

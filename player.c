@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "game.h"
-#include "player.h"
+
+
 #include "map.h"
 #include "mapUtil.h"
+#include "player.h"
+#include "game.h"
 #include "playerInTournament.h"
 
 
