@@ -4,6 +4,7 @@
 #define TOURNAMENT_WIN_WEIGHT 2
 #define TOURNAMENT_DRAW_WEIGHT 1
 #define TOURNAMENT_LOSS_WEIGHT 0
+#define TOURNAMENT_INVALID_INPUT -1
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -244,6 +245,17 @@ int tournamentGetMaxGamesPerPlayer(Tournament tournament);
 Game tournamentGetGame(Tournament tournament, int game_id);
 
 
+
+/**
+ * tournamentPrintStatsToFile: The function print its relevant stats to a given file
+ *
+ * @param tournament - the tournament that will extract its stats
+ * @param output_file - the file the output will be written to
+ *
+ * @return
+ *     true - if the operation completed successfully
+ *     false - if the operation failed
+ */
 bool tournamentPrintStatsToFile(Tournament tournament, FILE *output_file);
 
 #endif //  _TOURNAMENT_H

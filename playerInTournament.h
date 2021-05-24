@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "game.h"
 
+#define PLAYER_IN_TOURNAMENT_INVALID_INPUT -1
 
 typedef enum {
     PLAYER_IN_TOURNAMENT_OUT_OF_MEMORY,

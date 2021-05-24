@@ -47,7 +47,6 @@ static ChessResult translateTournamentResultToChessResult(TournamentResult resul
         default: // Shouldn't get here
             return CHESS_SUCCESS;
     }
-
 }
 
 
@@ -208,7 +207,7 @@ static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess,
 // Creates the game, adds it to the players' & tournament records
 static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player first_player_struct,
                             Player second_player_struct, Winner winner, int play_time,
-                            int amount_of_new_players, int max_games_per_player)
+                            int amount_of_new_players)
 {
     TournamentResult new_game_result =  tournamentAddGame(tournament, playerGetID(first_player_struct),
                         playerGetID(second_player_struct), winner, play_time, amount_of_new_players);
@@ -221,12 +220,12 @@ static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player
     int new_game_id = tournamentGetSizeGames(tournament) - 1;
     Game new_game = tournamentGetGame(tournament, new_game_id);
 
-    PlayerResult add_game_result = playerAddGame(first_player_struct, new_game, max_games_per_player);
+    PlayerResult add_game_result = playerAddGame(first_player_struct, new_game);
     if (add_game_result != PLAYER_SUCCESS)
     {
         return CHESS_OUT_OF_MEMORY;
     }
-    add_game_result = playerAddGame(second_player_struct, new_game, max_games_per_player);
+    add_game_result = playerAddGame(second_player_struct, new_game);
     if (add_game_result != PLAYER_SUCCESS)
     {
         return CHESS_OUT_OF_MEMORY;
@@ -609,9 +608,9 @@ ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
         return CHESS_EXCEEDED_GAMES;
     }
 
-    ChessResult add_game_result = chessAddGameTournamentAndPlayer(tournament, first_player_struct,
-                            second_player_struct, winner, play_time,
-                            amount_of_new_players, max_games_per_player);
+    ChessResult add_game_result = chessAddGameTournamentAndPlayer(tournament,
+                            first_player_struct, second_player_struct,
+                            winner, play_time, amount_of_new_players);
 
     return add_game_result;
 }

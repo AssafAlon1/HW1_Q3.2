@@ -22,31 +22,11 @@ struct tournament_t {
 };
 
 
+//=============================================================//
 //================== INTERNAL FUNCTIONS START ==================//
+//==============================================================//
 
-// static Map createGamesMap()
-// {
-//     Map map = mapCreate(gameCopyWrapper, intCopy,
-//                         gameDestroyWrapper, intFree, intCompare );
-//     return map;
-// }
-
-
-// Get the length (amount of digits) of the longest int
-// static int maxLengthOfInt()
-// {
-//     int length = 0;
-//     int number = INT_MAX;
-//     while (number != 0)
-//     {
-//         length++;
-//         number /= 10;
-//     }
-//     return length;
-// }
-
-
-// Checks if a char* points to a uppercased
+// Checks if a char* points to an uppercased char
 static bool isUpper(const char *character)
 {
     if (character == NULL)
@@ -57,7 +37,7 @@ static bool isUpper(const char *character)
     return *character >= 'A' && *character <= 'Z';
 }
 
-// Checks if a char* points to a lowercased
+// Checks if a char* points to a lowercased char
 static bool isLower(const char *character)
 {
     if (character == NULL)
@@ -68,7 +48,7 @@ static bool isLower(const char *character)
     return *character >= 'a' && *character <= 'z';
 }
 
-// Check if a char* points to a space
+// Check if a char* points to a space char
 static bool isSpace(const char *character)
 {
     if (character == NULL)
@@ -79,6 +59,7 @@ static bool isSpace(const char *character)
     return *character == ' ';
 }
 
+// Copies a string, returning the copy
 static char* copyLocation (const char *location)
 {
     // Location is NULL / invalid by the rules we applied
@@ -93,48 +74,46 @@ static char* copyLocation (const char *location)
         return NULL;
     }
 
-    new_location = strcpy(new_location, location);
+    strcpy(new_location, location);
     return new_location;
 }
 
+//============================================================//
 //================== INTERNAL FUNCTIONS END ==================//
-
-
-
+//============================================================//
 
 
 Tournament tournamentCreate(int tournament_id, int max_games_per_player,
                             const char *tournament_location)
 {
+    // Allocate new tournament
     Tournament tournament = malloc(sizeof(*tournament));
-
-    //check if the tournament allocation failed 
     if (tournament == NULL)
     {
         return NULL;
     }
     
+    // Allocate new game map
     tournament->games = createGamesMap();
-    
-    //check if thr games map allocation failed
     if(tournament->games == NULL)
     {
         free(tournament);
         return NULL;
     }
 
-
+    // Validating location
     if (!tournamentValidateLocation(tournament_location))
     {
         return NULL;
     }
 
-    tournament->location             = copyLocation(tournament_location);
+    tournament->location     = copyLocation(tournament_location);
     if (tournament->location == NULL)
     {
         return NULL;
     }
 
+    // Initializing fields
     tournament->tournament_id        = tournament_id;
     tournament->max_games_per_player = max_games_per_player;
     tournament->winner               = INVALID_PLAYER;
@@ -161,6 +140,7 @@ void tournamentDestroy(Tournament tournament)
 
 Tournament tournamentCopy(Tournament tournament)
 {
+    // Create a new tournament
     if (tournament == NULL)
     {
         return NULL;
@@ -172,6 +152,7 @@ Tournament tournamentCopy(Tournament tournament)
         return NULL;
     }
 
+    // Copy map and location by value
     new_tournament->games = mapCopy(tournament->games);
     if (new_tournament->games == NULL)
     {
@@ -187,6 +168,7 @@ Tournament tournamentCopy(Tournament tournament)
         return NULL;
     }
 
+    // Copy fields
     new_tournament->amount_of_players = tournament->amount_of_players;
     new_tournament->current_game_id   = tournament->current_game_id;
     new_tournament->longest_game      = tournament->longest_game;
@@ -201,6 +183,7 @@ Tournament tournamentCopy(Tournament tournament)
 TournamentResult tournamentAddGame(Tournament tournament, int first_player, int second_player,
                               Winner winner, int play_time, int amount_of_new_players)
 {
+    // Input verification
     if (tournament == NULL)
     {
         return TOURNAMENT_NULL_ARGUMENT;
@@ -221,9 +204,7 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
         return TOURNAMENT_ENDED;
     }
 
-    //assert game is valid
-
-
+    // Creating game struct & adding it to the games map
     Game new_game = gameCreate(tournament->tournament_id, first_player, second_player,
                winner, play_time, tournament->current_game_id);
     
@@ -232,9 +213,15 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
         return TOURNAMENT_OUT_OF_MEMORY;
     }
 
-    mapPut(tournament->games, &(tournament->current_game_id), new_game);
+    MapResult map_put_result = mapPut(tournament->games, &(tournament->current_game_id), new_game);
     gameDestroy(new_game);
 
+    if (map_put_result == MAP_OUT_OF_MEMORY)  // Otherwise assuming MAP_SUCCESS
+    {
+        return TOURNAMENT_OUT_OF_MEMORY;
+    }
+
+    // Update statistics
     if (play_time > tournament->longest_game)
     {
         tournament->longest_game = play_time;
@@ -242,6 +229,7 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
     (tournament->current_game_id)++;
     tournament->total_game_time   += play_time;
     tournament->amount_of_players += amount_of_new_players;
+
 
     return TOURNAMENT_SUCCESS;
 }
@@ -277,11 +265,10 @@ TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, in
         Game game = mapGet(tournament->games, &game_ids[i]);
         if (game == NULL)
         {
-            return TOURNAMENT_INVALID_ID; // NEVER GET HERE?????
+            return TOURNAMENT_INVALID_ID; // Program should never get here
         }
 
         gameRemovePlayer(game, player_id);
-
     }
 
     return TOURNAMENT_SUCCESS;
@@ -290,12 +277,12 @@ TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, in
 
 TournamentResult tournamentEnd (Tournament tournament, int winner_id)
 {
+    // Input verification
     if (tournament == NULL)
     {
         return TOURNAMENT_NULL_ARGUMENT;
     }
 
-    // Checks if there were games played in the tournament
     if (tournament->current_game_id == 0)
     {
         return TOURNAMENT_NO_GAMES;
@@ -307,37 +294,64 @@ TournamentResult tournamentEnd (Tournament tournament, int winner_id)
 }
 
 
-
-
 int tournamentGetSizePlayers (Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return TOURNAMENT_INVALID_INPUT;
+    }
     return tournament->amount_of_players;
 }
 
 
 int tournamentGetSizeGames (Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return TOURNAMENT_INVALID_INPUT;
+    }
     return tournament->current_game_id;
 }
 
 
 int tournamentGetWinner(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return TOURNAMENT_INVALID_INPUT;
+    }
     return tournament->winner;
 }
 
+
 char* tournamentGetLocation(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return NULL;
+    }
     return tournament->location;
 }
 
+
 int tournamentGetLongestGameTime(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return TOURNAMENT_INVALID_INPUT;
+    }
     return tournament->longest_game;
 }
 
+
 double tournamentGetAverageGameTime(Tournament tournament)
 {
+    if (tournament == NULL)
+    {
+        return TOURNAMENT_INVALID_INPUT;
+    }
+
+    // No games so far
     if(tournament->current_game_id == 0)
     {
         return 0;
@@ -378,7 +392,7 @@ int tournamentGetMaxGamesPerPlayer(Tournament tournament)
 {
     if (tournament == NULL)
     {
-        return -1;
+        return TOURNAMENT_INVALID_INPUT;
     }
     return tournament->max_games_per_player;
 }
@@ -397,8 +411,11 @@ Game tournamentGetGame(Tournament tournament, int game_id)
 
 bool tournamentPrintStatsToFile(Tournament tournament, FILE *output_file)
 {
+    // Calculate average game time, initialize output tracker
     double average_game_time = tournamentGetAverageGameTime(tournament);
     int fprintf_output = 0;
+
+    // Try to print to file the 1st part, check success, repeat for 2nd part
     fprintf_output = fprintf(output_file,"%d\n%d\n%.2f\n",
                             tournament->winner,
                             tournament->longest_game,

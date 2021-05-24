@@ -3,6 +3,7 @@
 
 #define INVALID_PLAYER -1
 #define DELETED_PLAYER -2
+#define PLAYER_INVALID_INPUT -1
 
 #define LOSE_TO_WIN 11
 #define DRAW_TO_WIN 12
@@ -21,6 +22,7 @@ typedef enum {
     PLAYER_NULL_ARGUMENT,
     PLAYER_INVALID_ID,
     PLAYER_TOURNAMENT_NOT_EXIST,
+    PLAYER_TOURNAMENT_ALREADY_EXISTS,
     PLAYER_NOT_IN_GAME,
     PLAYER_GAME_ALREADY_EXISTS,
     PLAYER_EXCEEDED_GAMES,
@@ -69,14 +71,12 @@ Player playerCopy(Player player);
  *
  * @param player - the player that has played said game
  * @param game   - the game that the player has played
- * @param max_games_per_player - the max games a player get play in the tournament
- *                               in which the game was played
  * @return
  *      PLAYER_NULL_ARGUMENT - if player is NULL or game is NULL
  *      PLAYER_OUT_OF_MEMORY - if an allocation failed
  *      PLAYER_SUCCESS       - in the case of success
  */
-PlayerResult playerAddGame(Player player, Game game, int max_games_per_player);
+PlayerResult playerAddGame(Player player, Game game);
 
 
 
@@ -188,14 +188,14 @@ bool playerCanPlayMoreGamesInTournament(Player player, int tournament_id);
 PlayerResult playerAddTournament(Player player, int tournament_id, int max_games_per_player);
 
 
-/**
- * playerGetPlayerInTournaments: Returns a map of the player in tournament records
- *
- * @param player - the player
- * @return
- *      a pointer to a map that contains the player in tournament records
- */
-Map* playerGetPlayerInTournaments(Player player);
+// /**
+//  * playerGetPlayerInTournaments: Returns a map of the player in tournament records
+//  *
+//  * @param player - the player
+//  * @return
+//  *      a pointer to a map that contains the player in tournament records
+//  */
+// Map* playerGetPlayerInTournaments(Player player);
 
 
 /**
@@ -240,6 +240,22 @@ int playerGetDrawsInTournament(Player player, int tournament_id);
 
 int playerGetLossesInTournament(Player player, int tournament_id);
 
+
+// /**
+//  * playerNewTournament: register a new tournament for the player
+//  *
+//  * @param player - the player that has played said game
+//  * @param tournament_id   - the id of the tournament needed to be updated
+//  * @param max_games_per_player - the maximum amount of games allowed on the tournament
+//  * @return
+//  *      PLAYER_NULL_ARGUMENT - if player is NULL
+//  *      PLAYER_OUT_OF_MEMORY - if an allocation failed
+//  *      PLAYER_SUCCESS       - in the case of success
+//  */
+// PlayerResult playerNewTournament(Player player, int tournament_id, int max_games_per_player);
+
+
 #endif
+
 
 

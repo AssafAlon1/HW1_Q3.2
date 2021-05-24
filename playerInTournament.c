@@ -18,9 +18,11 @@ struct player_in_tournament_t {
     int total_game_time;
 }; 
 
-
+//==============================================================//
 //================== INTERNAL FUNCTIONS START ==================//
+//==============================================================//
 
+// Checks whether a player played a game with a given ID
 static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
 {
     int game_count = playerInTournamentGetTotalGames(player_in_tournament);
@@ -28,13 +30,13 @@ static bool isGameExists(PlayerInTournament player_in_tournament, int game_id)
     {
         if((player_in_tournament->game_ids)[i] == game_id)
         {
-            return true;
+            return true; // Game exists
         }
     }
     return false;
 }
 
-
+// Verify the input for the playerInTournamentAddGame function
 static PlayerInTournamentResult playerInTournamentAddGameInputVerification(PlayerInTournament player_in_tournament, Game game)
 {
     // Verify input not NULL
@@ -52,7 +54,7 @@ static PlayerInTournamentResult playerInTournamentAddGameInputVerification(Playe
     // Verify game ID is unique
     if (isGameExists(player_in_tournament, gameGetID(game)))
     {
-        return PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS;          // SHOULD ALSO VERIFY OPPONENTS NEVER PLAYED EACH OTHER?
+        return PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS;
     }
 
     // Verify game count is valid
@@ -71,31 +73,24 @@ static PlayerInTournamentResult playerInTournamentAddGameInputVerification(Playe
     return PLAYER_IN_TOURNAMENT_SUCCESS;
 }
 
-
+//============================================================//
 //================== INTERNAL FUNCTIONS END ==================//
-
+//============================================================//
 
 
 
 
 PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player)
 {
+    // Allocate new player_in_tournament
     PlayerInTournament player_in_tournament = malloc(sizeof(*player_in_tournament));
-    // Check if the player in tournament allocation failed
     if (player_in_tournament == NULL)
     {
         return NULL;
     }
-    player_in_tournament->game_ids = NULL;
-    player_in_tournament->player_id = player_id;
-    player_in_tournament->tournament_id = tournament_id;
-    player_in_tournament->max_games_per_player = max_games_per_player;
-    player_in_tournament->wins   = 0;
-    player_in_tournament->draws  = 0;
-    player_in_tournament->losses = 0;
-    player_in_tournament->total_game_time = 0;
+    
+    // Allocate game_ids array
     player_in_tournament->game_ids = malloc(max_games_per_player*sizeof(int));
-    // If the allocation failed
     if (player_in_tournament->game_ids == NULL)
     {
         free(player_in_tournament);
@@ -108,8 +103,18 @@ PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, in
         player_in_tournament->game_ids[i] = INVALID_GAME_ID;
     }
 
+    // Initializing fields
+    player_in_tournament->player_id = player_id;
+    player_in_tournament->tournament_id = tournament_id;
+    player_in_tournament->max_games_per_player = max_games_per_player;
+    player_in_tournament->wins   = 0;
+    player_in_tournament->draws  = 0;
+    player_in_tournament->losses = 0;
+    player_in_tournament->total_game_time = 0;
+
     return player_in_tournament;
 }
+
 
 void playerInTournamentDestroy(PlayerInTournament player_in_tournament)
 {
@@ -128,13 +133,18 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
     {
         return NULL;
     }
+
+    // Create new player_in_tournament
     PlayerInTournament new_player_in_tournament = playerInTournamentCreate(
-                    player_in_tournament->player_id, player_in_tournament->tournament_id, player_in_tournament->max_games_per_player);
+                    player_in_tournament->player_id, player_in_tournament->tournament_id,
+                    player_in_tournament->max_games_per_player);
+    
     if (new_player_in_tournament == NULL)
     {
         return NULL;
     }
 
+    // Copy fields
     new_player_in_tournament->draws  = player_in_tournament->draws;
     new_player_in_tournament->wins   = player_in_tournament->wins;
     new_player_in_tournament->losses = player_in_tournament->losses;
@@ -164,7 +174,7 @@ PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_
         return verification_result;
     }
 
-    // Update play time, game count & wins / losses / draws 
+    // Update statistics (play time, game count & wins / losses / draws)
     int game_count = playerInTournamentGetTotalGames(player_in_tournament);
     (player_in_tournament->game_ids)[game_count] = gameGetID(game);
     player_in_tournament->total_game_time += gameGetPlayTime(game);
@@ -174,7 +184,6 @@ PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_
     {
         (player_in_tournament->wins)++;
     }
-
     else
     {
         if (winner_id == INVALID_PLAYER)
@@ -193,31 +202,60 @@ PlayerInTournamentResult playerInTournamentAddGame(PlayerInTournament player_in_
 
 int playerInTournamentGetWins (PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
     return player_in_tournament->wins;
 }
 
 int playerInTournamentGetDraws (PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
+
     return player_in_tournament->draws;
 }
 
 int playerInTournamentGetLosses (PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
+
     return player_in_tournament->losses;
 }
 
 int playerInTournamentGetTotalTime (PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
+
     return player_in_tournament->total_game_time;
 }
 
 int playerInTournamentGetTotalGames (PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
+
     return player_in_tournament->wins + player_in_tournament->draws + player_in_tournament->losses;
 }
 
 int *playerInTournamentGetGameIds(PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return NULL;
+    }
+
     return player_in_tournament->game_ids;
 }
 
@@ -227,8 +265,14 @@ bool playerInTournamentCanPlayMore(PlayerInTournament player_in_tournament)
     return playerInTournamentGetTotalGames(player_in_tournament) < player_in_tournament->max_games_per_player;
 }
 
+
 int playerInTournamentGetTournamentID(PlayerInTournament player_in_tournament)
 {
+    if (player_in_tournament == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_INVALID_INPUT;
+    }
+
     return player_in_tournament->tournament_id;
 }
 

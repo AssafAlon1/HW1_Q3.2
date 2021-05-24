@@ -185,8 +185,9 @@ void playerTests()
     Game game1 = gameCreate(1, 1001, 1002, FIRST_PLAYER, 300, 101);
     Game game2 = gameCreate(1, 1003, 1001, DRAW, 600, 102);
     assert(game1 != NULL && game2 != NULL);
-    assert(playerAddGame(player1, game1, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player1, game2, 3) == PLAYER_SUCCESS);
+    assert(playerAddTournament(player1, 1, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game1) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game2) == PLAYER_SUCCESS);
     gameDestroy(game1);
     gameDestroy(game2);
     assert(playerGetTotalGames(player1) == 2);
@@ -194,11 +195,12 @@ void playerTests()
     assert(my_abs(playerGetLevel(player1) - 4) < eps);
 
     Game game3 = gameCreate(1, 1001, 1004, SECOND_PLAYER, 900, 103);
+    assert(playerAddTournament(player1, 2, 3) == PLAYER_SUCCESS);
     Game game4 = gameCreate(2, 1001, 1004, SECOND_PLAYER, 900, 103); ////
     assert(game3 != NULL && game4 != NULL);
-    assert(playerAddGame(player1, game3, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player1, game3, 3) == PLAYER_GAME_ALREADY_EXISTS);
-    assert(playerAddGame(player1, game4, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player1, game4) == PLAYER_SUCCESS);
     gameDestroy(game3);
     gameDestroy(game4);
     assert(playerGetTotalGames(player1) == 4);
@@ -210,10 +212,10 @@ void playerTests()
     Game game7 = gameCreate(2, 1001, 1007, SECOND_PLAYER, 900, 106);
     Game game8 = gameCreate(1, 1001, 1007, FIRST_PLAYER, 900, 120);
     assert (game5 != NULL && game6 != NULL && game7 != NULL && game8 != NULL);
-    assert(playerAddGame(player1, game8, 3) == PLAYER_EXCEEDED_GAMES);
-    assert(playerAddGame(player1, game5, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player1, game6, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player1, game7, 3) == PLAYER_EXCEEDED_GAMES);
+    assert(playerAddGame(player1, game8) == PLAYER_EXCEEDED_GAMES);
+    assert(playerAddGame(player1, game5) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game6) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game7) == PLAYER_EXCEEDED_GAMES);
     gameDestroy(game5);
     gameDestroy(game6);
     gameDestroy(game7);
@@ -234,8 +236,9 @@ void playerTests()
     Game game11 = gameCreate(1, 1001, 1002, FIRST_PLAYER, 300, 101);
     Game game12 = gameCreate(1, 1003, 1001, DRAW, 600, 102);
     assert(game1 != NULL && game2 != NULL);
-    assert(playerAddGame(player1, game11, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player1, game12, 3) == PLAYER_NOT_IN_GAME);
+    assert(playerAddTournament(player1, 1, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game11) == PLAYER_SUCCESS);
+    assert(playerAddGame(player1, game12) == PLAYER_NOT_IN_GAME);
     gameDestroy(game11);
     gameDestroy(game12);
 
@@ -247,23 +250,23 @@ void playerTests()
 
     Game game13 = gameCreate(1, 1002, 1003, FIRST_PLAYER, 700, 103);
     assert(game13 != NULL);
-    assert(playerAddGame(player2, game13, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
-    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
-    assert(playerAddGame(player2, game13, 3) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game13) == PLAYER_SUCCESS);
+    assert(playerAddGame(player2, game13) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game13) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game13) == PLAYER_GAME_ALREADY_EXISTS);
     assert(playerGetTotalGames(player3) == 1);
     assert(playerGetTotalGames(player2) == 2);
     assert(my_abs(playerGetLevel(player2) - (-2)) < eps);
-    assert(playerAddGame(player3, game13, 2) == PLAYER_SUCCESS);
+    assert(playerAddGame(player3, game13) == PLAYER_SUCCESS);
     gameDestroy(game13);
 
     Game game14 = gameCreate(1, 1002, 1004, FIRST_PLAYER, 500, 104);
     Game game15 = gameCreate(1, 1002, 1005, FIRST_PLAYER, 346, 105);
     assert(game14 != NULL && game15 != NULL);
-    assert(playerAddGame(player2, game14, 3) == PLAYER_SUCCESS);
-    assert(playerAddGame(player2, game14, 3) == PLAYER_GAME_ALREADY_EXISTS);
-    assert(playerAddGame(player2, game15, 3) == PLAYER_EXCEEDED_GAMES);
-    assert(playerAddGame(player3, game15, 3) == PLAYER_SUCCESS);
+    assert(playerAddGame(player2, game14) == PLAYER_SUCCESS);
+    assert(playerAddGame(player2, game14) == PLAYER_GAME_ALREADY_EXISTS);
+    assert(playerAddGame(player2, game15) == PLAYER_EXCEEDED_GAMES);
+    assert(playerAddGame(player3, game15) == PLAYER_SUCCESS);
     gameDestroy(game14);
     gameDestroy(game15);
     assert(playerGetTotalGames(player3) == 3);
