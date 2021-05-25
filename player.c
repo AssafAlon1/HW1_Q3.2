@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-#include "map.h"
+#include "./mtm_map/map.h"
 #include "mapUtil.h"
 #include "player.h"
 #include "game.h"

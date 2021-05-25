@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "chessSystem.h"
-#include "map.h"
+#include "./mtm_map/map.h"
 #include "mapUtil.h"
 #include "tournament.h"
 #include "game.h"
@@ -302,7 +302,7 @@ static ChessResult chessRemovePlayerVerifyInput(ChessSystem chess, int player_id
 
     if (player_id <= 0)
     {
-        return CHESS_PLAYER_NOT_EXIST;
+        return CHESS_INVALID_ID;
     }
 
     if (!mapContains(chess->players, &player_id))
@@ -437,12 +437,12 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
 
     int winner_id     = *player_iterator;
     int winner_score  = chessCalculatePlayerScore(chess, winner_id, tournament_id);
-    //free free freefreefreefreefree
     while (player_iterator)
     {
         bool is_playing = isPlayerPlayingInTournament(chess, *player_iterator, tournament_id);
         if (!is_playing)
         {
+            free(player_iterator);
             player_iterator = mapGetNext(chess->players);
             continue;
         }
@@ -456,6 +456,7 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
             winner_id = new_winner;
             winner_score = player_score;
         }
+        free(player_iterator);
         player_iterator = mapGetNext(chess->players);
     }
 
@@ -640,7 +641,6 @@ ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
     mapRemove(chess->tournaments, &tournament_id);
 
     // Remove tournament records and stats from players
-    //////////Player player_iterator = mapGetFirst(chess->players);
     int  *player_iterator = mapGetFirst(chess->players);
     while (player_iterator != NULL)
     {
@@ -649,6 +649,7 @@ ChessResult chessRemoveTournament (ChessSystem chess, int tournament_id)
         {
             playerRemoveTournament(player, tournament_id);
         }
+        free(player_iterator);
         player_iterator = mapGetNext(chess->players);
     }
 
@@ -788,11 +789,13 @@ static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_
         {
             player_id[current_index]    = -1;
             player_level[current_index] = -11;
+            free(player_iterator);
             player_iterator = mapGetNext(chess->players);
             continue;
         }
         player_id[current_index]    = *player_iterator;
         player_level[current_index] = playerGetLevel(mapGet(chess->players, player_iterator));
+        free(player_iterator);
         player_iterator             = mapGetNext(chess->players);
         current_index++;
     }
@@ -909,6 +912,7 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
         Tournament tournament = mapGet(chess->tournaments, tournament_id_iterator);
         if (tournamentGetWinner(tournament) == INVALID_PLAYER)
         {
+            free(tournament_id_iterator);
             tournament_id_iterator = mapGetNext(chess->tournaments);
             continue;
         }
@@ -920,12 +924,13 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
             fclose(output_file);
             return CHESS_SAVE_FAILURE;
         }
+        free(tournament_id_iterator);
         tournament_id_iterator = mapGetNext(chess->tournaments);
     }
 
+    fclose(output_file);
     if (!is_tournament_ended)
     {
-        fclose(output_file);
         return CHESS_NO_TOURNAMENTS_ENDED;
     }
 

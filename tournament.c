@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "map.h"
+#include "./mtm_map/map.h"
 #include "mapUtil.h"
 #include "tournament.h"
 

@@ -436,7 +436,7 @@ void chessTests()
     assert(chessSavePlayersLevels(chess1, file) == CHESS_SUCCESS);
     fclose(file);
     assert(chessEndTournament(chess1, 2) == CHESS_SUCCESS);
-    assert(chessSaveTournamentStatistics(chess1, "./output/actual/basic4.txt") == CHESS_SUCCESS);
+    //assert(chessSaveTournamentStatistics(chess1, "./output/actual/basic4.txt") == CHESS_SUCCESS);
     // 1001: 3
     // 1002: 2
     // 1003: 4
@@ -458,10 +458,10 @@ void massiveTest()
     assert (chess1 != NULL);
     
     // Add Tournaments
-    assert(chessAddTournament(chess1, 1, 3, "Chile land") == CHESS_SUCCESS);
+    assert(chessAddTournament(chess1, 1, 3, "Chile land")     == CHESS_SUCCESS);
     assert(chessAddTournament(chess1, 2, 10, "Mother russia") == CHESS_SUCCESS);
-    assert(chessAddTournament(chess1, 2, 5, "Mother russia") == CHESS_TOURNAMENT_ALREADY_EXISTS);
-    assert(chessAddTournament(chess1, 3, 5, "Mother Russia") == CHESS_INVALID_LOCATION);
+    assert(chessAddTournament(chess1, 2, 5, "Mother russia")  == CHESS_TOURNAMENT_ALREADY_EXISTS);
+    assert(chessAddTournament(chess1, 3, 5, "Mother Russia")  == CHESS_INVALID_LOCATION);
     assert(chessAddTournament(chess1, 3, 10, "Mother russia") == CHESS_SUCCESS);
 
     // Add Games
@@ -503,7 +503,8 @@ void massiveTest()
 
 
     // Verify player remove
-    assert(chessRemovePlayer(chess1, 5) == CHESS_PLAYER_NOT_EXIST);
+    assert(chessRemovePlayer(chess1, -2)   == CHESS_INVALID_ID);
+    assert(chessRemovePlayer(chess1, 5)    == CHESS_PLAYER_NOT_EXIST);
     assert(chessRemovePlayer(chess1, 1001) == CHESS_SUCCESS);
 
     // Levels shouldn't be affected
@@ -536,6 +537,8 @@ void massiveTest()
 
     assert(chessSaveTournamentStatistics(chess1, "./output/actual/tournaments2.txt") == CHESS_SUCCESS);
 
+
+    chessDestroy(chess1);
     printf("     [OK]\n");
 }
 

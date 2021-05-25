@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "map.h"
+#include "./mtm_map/map.h"
 #include "mapUtil.h"
 #include "game.h"
 #include "playerInTournament.h"
@@ -80,7 +80,7 @@ void tournamentDestroyWrapper(void *tournament)
 Map createGamesMap()
 {
     Map map = mapCreate(gameCopyWrapper, intCopy,
-                        gameDestroyWrapper, intFree, intCompare );
+                        gameDestroyWrapper, intFree, intCompare);
     return map;
 }
 

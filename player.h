@@ -1,6 +1,10 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include <stdio.h>
+#include "game.h"
+//#include "./mtm_map/map.h"
+
 #define INVALID_PLAYER -3
 #define DELETED_PLAYER -2
 #define PLAYER_INVALID_INPUT -1
@@ -11,12 +15,6 @@
 #define WIN_WEIGHT 6
 #define LOSS_WEIGHT -10
 #define DRAW_WEIGHT 2
-
-#include <stdio.h>
-//#include "chessSystem.h"
-#include "game.h"
-#include "map.h"
-
 typedef enum {
     PLAYER_OUT_OF_MEMORY,
     PLAYER_NULL_ARGUMENT,
