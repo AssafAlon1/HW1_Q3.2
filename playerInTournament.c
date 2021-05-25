@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./mtm_map/map.h"
-#include "mapUtil.h"
 #include "playerInTournament.h"
-#include "game.h"
 
-//#include "chessSystem.h"
-//#include "player.h"
 
 struct player_in_tournament_t {
     int tournament_id;

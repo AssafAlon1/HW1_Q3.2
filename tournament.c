@@ -154,21 +154,15 @@ Tournament tournamentCopy(Tournament tournament)
         return NULL;
     }
 
-    // Copy map and location by value
-    new_tournament->games = mapCopy(tournament->games);
-    if (new_tournament->games == NULL)
+    // Copy map, freeing the previous one
+    Map game_map = mapCopy(tournament->games);
+    if (game_map == NULL)
     {
         free(new_tournament);
         return NULL;
     }
-    
-    new_tournament->location = copyLocation(tournament->location);
-    if (new_tournament->location == NULL)
-    {
-        mapDestroy(new_tournament->games);
-        free(new_tournament);
-        return NULL;
-    }
+    mapDestroy(new_tournament->games);
+    new_tournament->games = game_map;
 
     // Copy fields
     new_tournament->amount_of_players = tournament->amount_of_players;

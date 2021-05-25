@@ -149,12 +149,14 @@ Player playerCopy(Player player)
     }
 
     // Copy playerInTournament map
-    new_player->player_in_tournaments = mapCopy(player->player_in_tournaments);
-    if (new_player->player_in_tournaments == NULL)
+    Map player_in_tournament_map = mapCopy(player->player_in_tournaments);
+    if (player_in_tournament_map == NULL)
     {
         free(new_player);
         return NULL;
     }
+    mapDestroy(new_player->player_in_tournaments);
+    new_player->player_in_tournaments = player_in_tournament_map;
 
     // Copy fields
     new_player->total_wins      = player->total_wins;
@@ -455,39 +457,3 @@ int playerGetLossesInTournament(Player player, int tournament_id)
     return playerInTournamentGetLosses(player_in_tournament);
 }
 
-
-
-// Map* playerGetPlayerInTournaments(Player player)
-// {
-//     return &(player->player_in_tournaments);
-// }
-
-
-
-// PlayerResult playerNewTournament(Player player, int tournament_id, int max_games_per_player)
-// {
-//     if (player == NULL)
-//     {
-//         return PLAYER_NULL_ARGUMENT;
-//     }
-    
-//     // Create PlayerInTournament
-//     PlayerInTournament player_in_tournament = playerInTournamentCreate(
-//                 player->player_id, tournament_id, max_games_per_player);
-    
-//     if(player_in_tournament == NULL)
-//     {
-//         return PLAYER_OUT_OF_MEMORY;
-//     }
-
-//     // Put PlayerInTournament in map and verify success
-//     MapResult put_result = mapPut(player->player_in_tournaments, &tournament_id, player_in_tournament);
-//     if (put_result == MAP_OUT_OF_MEMORY)
-//     {
-//         playerInTournamentDestroy(player_in_tournament);
-//         return PLAYER_OUT_OF_MEMORY;
-//     }
-
-//     playerInTournamentDestroy(player_in_tournament); // A copy was sent to the map
-//     return PLAYER_SUCCESS;
-// }
