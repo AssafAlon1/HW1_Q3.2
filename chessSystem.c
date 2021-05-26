@@ -791,6 +791,7 @@ static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_
             player_level[current_index] = -11;
             free(player_iterator);
             player_iterator = mapGetNext(chess->players);
+            current_index++;
             continue;
         }
         player_id[current_index]    = *player_iterator;
@@ -849,6 +850,7 @@ static void sortLinkedArrays (double referenced_array[], int second_array[], int
 //     {
 //         printf("ID: %d,  LVL: %.2f\n", id[i], lvl[i]);
 //     }
+//     printf("\n\n");
 // }
 
 ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)

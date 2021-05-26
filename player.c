@@ -240,7 +240,10 @@ double playerGetLevel(Player player)
     {
         return PLAYER_INVALID_INPUT;
     }
-
+    if (player->player_id == 30)
+    {
+        printf("win %d  \ndraw %d  \nloss %d\n", player->total_wins, player->total_draws, player->total_losses);
+    }
     int amount_of_games = playerGetTotalGames(player);
     if (amount_of_games == 0)
     {
@@ -275,7 +278,7 @@ PlayerResult playerRemoveTournament(Player player, int tournament_id)
     player->total_draws     -= playerInTournamentGetDraws(player_in_tournament);
     player->total_losses    -= playerInTournamentGetLosses(player_in_tournament);
     player->total_game_time -= playerInTournamentGetTotalTime(player_in_tournament);
-    
+
     // Cleanup
     mapRemove(player->player_in_tournaments, &tournament_id);
     player_in_tournament    = NULL;

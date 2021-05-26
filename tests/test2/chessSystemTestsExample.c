@@ -119,7 +119,6 @@ bool testChessAddTournament() {
     fclose(file_levels);
     ASSERT_TEST(chessRemovePlayer(chess, 10) == CHESS_SUCCESS);
     FILE* file_levels2 = fopen("your_output/player_levels_your_output2.txt", "w");
-    printf("EXP\n");
     ASSERT_TEST(chessSavePlayersLevels(chess, file_levels2) == CHESS_SUCCESS);
     fclose(file_levels2);
     ASSERT_TEST(chessSaveTournamentStatistics(chess, "your_output/tournament_statistics_your_output2.txt") == CHESS_SUCCESS);
