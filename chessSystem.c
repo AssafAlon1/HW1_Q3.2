@@ -9,6 +9,9 @@
 #include "player.h"
 #include "playerInTournament.h"
 
+#define CHESS_INVALID_INPUT -10
+#define PLAYER_PLAYS_NO_GAMES_LVL -11
+
 struct chess_system_t {
     Map tournaments;
     Map players;
@@ -319,25 +322,25 @@ static int chessCalculatePlayerScore(ChessSystem chess, int player_id, int tourn
 {
     if (chess == NULL)
     {
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
     
     Player player = mapGet(chess->players, &player_id);
     if (player == NULL)
     {
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
 
     int *game_ids = playerGetGameIdsInTournament(player, tournament_id);
     if (game_ids == NULL)
     {
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
 
     Tournament tournament = mapGet(chess->tournaments, &tournament_id);
     if (tournament == NULL)
     {
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
     
     int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
@@ -744,26 +747,26 @@ double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessRes
 {
     if (chess_result == NULL)
     {
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
 
     if (chess == NULL)
     {
         *chess_result = CHESS_NULL_ARGUMENT;
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
 
     if (player_id <= 0)
     {
         *chess_result = CHESS_INVALID_ID;
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
 
     Player player = mapGet(chess->players, &player_id);
     if (player == NULL)
     {
         *chess_result = CHESS_PLAYER_NOT_EXIST;
-        return -1;
+        return CHESS_INVALID_INPUT;
     }
     *chess_result = CHESS_SUCCESS;
     return playerGetFinishedGamesAverageTime(player);
@@ -787,8 +790,8 @@ static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_
     {
         if (playerGetTotalGames(mapGet(chess->players, player_iterator)) == 0)
         {
-            player_id[current_index]    = -1;
-            player_level[current_index] = -11;
+            player_id[current_index]    = INVALID_PLAYER;
+            player_level[current_index] = PLAYER_PLAYS_NO_GAMES_LVL;
             free(player_iterator);
             player_iterator = mapGetNext(chess->players);
             current_index++;
@@ -904,7 +907,6 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
     {
         return CHESS_NULL_ARGUMENT;
     }
-
     bool is_tournament_ended = false;
     int *tournament_id_iterator = mapGetFirst(chess->tournaments);
     FILE *output_file = fopen(path_file, "w+");
@@ -924,6 +926,7 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
         if (print_result == false)
         {
             fclose(output_file);
+            free(tournament_id_iterator);
             return CHESS_SAVE_FAILURE;
         }
         free(tournament_id_iterator);
