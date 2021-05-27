@@ -234,8 +234,11 @@ static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player
         return CHESS_OUT_OF_MEMORY;
     }
     add_game_result = playerAddGame(second_player_struct, new_game);
+
+    // In case of failure, remove the game from first_player
     if (add_game_result != PLAYER_SUCCESS)
     {
+        playerRemoveLastGame(first_player_struct, new_game);
         return CHESS_OUT_OF_MEMORY;
     }
 
