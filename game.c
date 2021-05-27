@@ -14,12 +14,14 @@ struct game_t {
 
 Game gameCreate(int tournament_id, int first_player, int second_player, GameWinner winner, int play_time, int game_id)
 {
+    // Create a new game
     Game game = malloc(sizeof(*game));
     if (game == NULL)
     {
         return NULL;
     }
 
+    // Initializing fields
     game->tournament_id = tournament_id;
     game->game_id       = game_id;
     game->first_player  = first_player;
@@ -57,6 +59,7 @@ Game gameCopy(Game game)
 
 GameResult gameRemovePlayer(Game game, int player_id)
 {
+    // Validate input
     if (game == NULL)
     {
         return GAME_NULL_ARGUMENT;
@@ -90,7 +93,7 @@ int gameGetIdOfWinner(Game game)
 {
     if (game == NULL)
     {
-        return -1;
+        return GAME_INVALID_INPUT;
     }
 
     if (game->winner == GAME_FIRST_PLAYER)
@@ -103,7 +106,7 @@ int gameGetIdOfWinner(Game game)
         return game->second_player;
     }
 
-    return INVALID_PLAYER;
+    return INVALID_PLAYER; // Tie
 }
 
 
@@ -120,7 +123,7 @@ int gameGetPlayTime(Game game)
 {
     if (game == NULL)
     {
-        return -1;
+        return GAME_INVALID_INPUT;
     }
     return game->play_time;
 }
@@ -144,7 +147,7 @@ int gameGetTournamentID(Game game)
 {
     if (game == NULL)
     {
-        return -1;
+        return GAME_INVALID_INPUT;
     }
     return game->tournament_id;
 }
@@ -154,7 +157,7 @@ int gameGetPlayersOpponent(Game game, int player_id)
 {
     if (game == NULL)
     {
-        return -1;
+        return GAME_INVALID_INPUT;
     }
 
     if (!gameisPlayerInGame(game, player_id))

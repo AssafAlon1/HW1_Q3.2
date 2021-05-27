@@ -76,7 +76,6 @@ static PlayerInTournamentResult playerInTournamentAddGameInputVerification(Playe
 
 
 
-
 PlayerInTournament playerInTournamentCreate(int player_id, int tournament_id, int max_games_per_player)
 {
     // Allocate new player_in_tournament
@@ -150,7 +149,7 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
     // Copy games
     for (int i = 0 ; i < player_in_tournament->max_games_per_player ; i++)
     {
-        // No more games were played
+        // break if no more games were played
         if (player_in_tournament->game_ids[i] == INVALID_GAME_ID)
         {
             break;
@@ -298,4 +297,50 @@ bool playerInTournamentUpdateLossToWin(PlayerInTournament player_in_tournament)
     player_in_tournament->losses -= 1;
     player_in_tournament->wins  += 1;
     return true;
+}
+
+
+PlayerInTournamentResult playerInTournamentRemoveLastGame(PlayerInTournament player_in_tournament, Game game)
+{
+    // Verify input not NULL
+    if (player_in_tournament == NULL || game == NULL)
+    {
+        return PLAYER_IN_TOURNAMENT_NULL_ARGUMENT;
+    }
+    
+    // Verify the player is in the game
+    if (!gameisPlayerInGame(game, player_in_tournament->player_id))
+    {
+        return PLAYER_IN_TOURNAMENT_PLAYER_NOT_IN_GAME;
+    }
+
+    // Verify game and player belong to the same tournament
+    if (player_in_tournament->tournament_id != gameGetTournamentID(game))
+    {
+        return PLAYER_IN_TOURNAMENT_CONFLICT_ID;
+    }
+    
+    int winner = gameGetIdOfWinner(game);
+    int game_id = playerInTournamentGetTotalGames(player_in_tournament);
+    
+    // Given game is not the last game
+    if (gameGetID(game) != player_in_tournament->game_ids[game_id-1])
+    {
+        return PLAYER_IN_TOURNAMENT_CONFLICT_ID;
+    }
+    
+    player_in_tournament->game_ids[game_id-1] = INVALID_GAME_ID;
+    if (player_in_tournament->player_id == winner)
+    {
+        (player_in_tournament->wins)--;
+        return PLAYER_IN_TOURNAMENT_SUCCESS;
+    }
+
+    if (winner == INVALID_PLAYER)
+    {
+        (player_in_tournament->draws)--;
+        return PLAYER_IN_TOURNAMENT_SUCCESS;
+    }
+    (player_in_tournament->losses)--;
+    return PLAYER_IN_TOURNAMENT_SUCCESS;
 }

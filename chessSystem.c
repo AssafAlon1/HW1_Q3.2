@@ -73,7 +73,7 @@ static bool isPlayerPlayingInTournament(ChessSystem chess, int player_id, int to
 }
 
 
-// Checks if 2 players play against eachother in a given tournament
+// Checks if 2 players play against each other in a given tournament
 static bool isGameBetweenPlayersExists(ChessSystem chess, int tournament_id,
                                        int first_player_id, int second_player_id)
 {
@@ -90,12 +90,14 @@ static bool isGameBetweenPlayersExists(ChessSystem chess, int tournament_id,
         return false;
     }
     
+    // Get id's of first_player's games in the tournament
     int *game_ids = playerGetGameIdsInTournament(first_player, tournament_id);
     if (game_ids == NULL)
     {
         return false;
     }
 
+    // Scan game ids, check if second_player plays one of them
     int max_games_per_player = tournamentGetMaxGamesPerPlayer(tournament);
     for (int i = 0 ; i < max_games_per_player ; i++)
     {
@@ -114,7 +116,7 @@ static bool isGameBetweenPlayersExists(ChessSystem chess, int tournament_id,
 }
 
 
-//
+// Checks if a given player is about to  exceed the maximum amount of game in a tournament
 static bool isPlayerInTournamentExceededGames(ChessSystem chess, int player_id,
                                               int tournament_id)
 {
@@ -122,7 +124,6 @@ static bool isPlayerInTournamentExceededGames(ChessSystem chess, int player_id,
     bool return_value = playerCanPlayMoreGamesInTournament(player, tournament_id);
     return !(return_value);
 }
-
 
 
 // Verify the input is valid for the chessAddGame function
@@ -163,8 +164,8 @@ static ChessResult chessAddGameVerifyInput(ChessSystem chess, int tournament_id,
 static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess,
                                         int first_player, int second_player)
 {
+    // Creating first_player if needed
     bool first_player_created = false; 
-
     if (mapContains(chess->players, &first_player) == false)
     {
         Player first_player_struct = playerCreate(first_player);
@@ -183,6 +184,7 @@ static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess,
         first_player_created = true;
     }
 
+    // Creating second_player if needed
     if (mapContains(chess->players, &second_player) == false)
     {
         Player second_player_struct = playerCreate(second_player);
@@ -196,13 +198,13 @@ static ChessResult chessAddGameCreatePlayersIfNeeded(ChessSystem chess,
 
         if (put_result != MAP_SUCCESS)
         {
+            // Removing the first player if the operation failed
             if (first_player_created)
             {
                 mapRemove(chess->players, &first_player);
             }
             return CHESS_OUT_OF_MEMORY;
         }
-
     }
 
     return CHESS_SUCCESS;
@@ -222,6 +224,7 @@ static ChessResult chessAddGameTournamentAndPlayer(Tournament tournament, Player
         return translateTournamentResultToChessResult(new_game_result);
     }
     
+    // Creates new game with its proper id
     int new_game_id = tournamentGetSizeGames(tournament) - 1;
     Game new_game = tournamentGetGame(tournament, new_game_id);
 

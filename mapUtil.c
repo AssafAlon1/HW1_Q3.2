@@ -24,7 +24,7 @@ int intCompare (void *num1, void *num2)
     return *(int*)num1 - *(int*)num2;
 }
 
-void** gamePtrCopy (void* pointer) // Is it ok?
+void** gamePtrCopy (void* pointer)
 {
     Game* new_pointer = malloc(sizeof(new_pointer));
     new_pointer = (Game*)pointer;

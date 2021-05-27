@@ -1,12 +1,13 @@
 #ifndef _GAME_H
 #define _GAME_H
 
-#define INVALID_GAME_ID -1
-#define INVALID_PLAYER -3
-#define DELETED_PLAYER -2
-
 #include <stdio.h>
 #include <stdbool.h>
+
+#define INVALID_GAME_ID -1
+#define GAME_INVALID_INPUT -10
+#define INVALID_PLAYER -3
+#define DELETED_PLAYER -2
 
 
 typedef enum {
@@ -39,7 +40,6 @@ typedef struct game_t *Game;
  *     in case of an allocation error)
  */
 Game gameCreate(int tournament_id, int first_player, int second_player, GameWinner winner, int play_time, int game_id);
-
 
 
 /**
@@ -103,7 +103,6 @@ int gameGetIdOfWinner(Game game);
 int gameGetID(Game game);
 
 
-
 /**
  * GetPlayTime: Get the length of the game in seconds
  *
@@ -157,4 +156,4 @@ int gameGetTournamentID(Game game);
  */
 int gameGetPlayersOpponent(Game game, int player_id);
 
-#endif
+#endif // _GAME_H

@@ -3,18 +3,22 @@
 
 #include <stdio.h>
 #include "game.h"
-//#include "./mtm_map/map.h"
 
 #define INVALID_PLAYER -3
 #define DELETED_PLAYER -2
-#define PLAYER_INVALID_INPUT -1
+#define PLAYER_INVALID_INPUT -10
 
-#define LOSS_TO_WIN 11
-#define DRAW_TO_WIN 12
+typedef enum {
+    LOSS_TO_WIN = 11,
+    DRAW_TO_WIN = 12
+} GameOutcomeChange;
 
-#define WIN_WEIGHT 6
-#define LOSS_WEIGHT -10
-#define DRAW_WEIGHT 2
+typedef enum {
+    LOSS_WEIGHT = -10,
+    DRAW_WEIGHT = 2,
+    WIN_WEIGHT = 6
+} GameOutcomeWeights;
+
 typedef enum {
     PLAYER_OUT_OF_MEMORY,
     PLAYER_NULL_ARGUMENT,
@@ -71,6 +75,8 @@ Player playerCopy(Player player);
  * @param game   - the game that the player has played
  * @return
  *      PLAYER_NULL_ARGUMENT - if player is NULL or game is NULL
+ *      PLAYER_NOT_IN_GAME   - if the player didn't play that game
+ *      PLAYER_TOURNAMENT_NOT_EXIST - if the tournament doesn't exist
  *      PLAYER_OUT_OF_MEMORY - if an allocation failed
  *      PLAYER_SUCCESS       - in the case of success
  */
@@ -99,7 +105,6 @@ int playerGetTotalGames(Player player);
  *      PLAYER_INVALID_INPUT - if the input is not valid
  */
 double playerGetFinishedGamesAverageTime(Player player);
-
 
 
 /**
@@ -215,6 +220,7 @@ bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, 
 */
 int *playerGetFirstTournamentID(Player player);
 
+
 /**
 *	playerGetNextTournamentID: Advances the iterator to the next tournament and
                                returns the ID of it
@@ -259,7 +265,19 @@ int playerGetDrawsInTournament(Player player, int tournament_id);
 int playerGetLossesInTournament(Player player, int tournament_id);
 
 
-#endif
 
+/**
+ * playerRemoveGame: unregisters the last game that the player has played
+ *
+ * @param player - the player that has played said game
+ * @param game   - the game that the player has played
+ * @return
+ *      PLAYER_NULL_ARGUMENT - if player is NULL or game is NULL
+ *      PLAYER_NOT_IN_GAME   - if the player is not in the game
+ *      PLAYER_TOURNAMENT_NOT_EXISTS - if the tournament doesn't exist
+ *      PLAYER_OUT_OF_MEMORY - if an allocation failed
+ *      PLAYER_SUCCESS       - in the case of success
+ */
+PlayerResult playerRemoveLastGame(Player player, Game game);
 
-
+#endif //_PLAYER_H

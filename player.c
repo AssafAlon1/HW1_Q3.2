@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #include "./mtm_map/map.h"
 #include "mapUtil.h"
 #include "player.h"
@@ -24,7 +23,7 @@ struct player_t {
 //==============================================================//
 
 
-// Updates Wins/Draws/Losses according to the game outcome
+// Updates Wins/Draws/Losses + gametime according to the game outcome
 static bool playerUpdateStatsForGame(Player player, Game game)
 {
     if (player == NULL || game == NULL)
@@ -51,17 +50,31 @@ static bool playerUpdateStatsForGame(Player player, Game game)
     return true;
 }
 
-
-// Returns the playerInTournament for a given player and a given tournament id
-static PlayerInTournament getPlayerInTournament(Player player, int tournament_id)
+// Updates stats for the removed last added game
+static bool playerUpdateStatsForRemovedGame(Player player, Game game)
 {
-    if (player == NULL)
+        if (player == NULL || game == NULL)
     {
-        return NULL;
+        return false;
     }
-
-    PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
-    return player_in_tournament;
+    int id_of_winner = gameGetIdOfWinner(game);
+    if (id_of_winner == player->player_id)  // Win
+    {
+        player->total_wins -= 1;
+    }
+    else
+    {
+        if (id_of_winner == INVALID_PLAYER) // Draw
+        {
+            player->total_draws -= 1;
+        }
+        else                                // Loss
+        {
+            player->total_losses -= 1;
+        }
+    }
+    player->total_game_time -= gameGetPlayTime(game);
+    return true;
 }
 
 // Translate error code from PlayerInTournament to Player
@@ -90,8 +103,6 @@ static PlayerResult translatePlayerInTournamentToPlayer(PlayerInTournamentResult
 //============================================================//
 //================== INTERNAL FUNCTIONS END ==================//
 //============================================================//
-
-
 
 
 Player playerCreate(int player_id)
@@ -181,8 +192,6 @@ PlayerResult playerAddGame(Player player, Game game /*int max_games_per_player*/
         return PLAYER_NOT_IN_GAME;
     }
 
-    // If the player has never played in the tournament tournament,
-    // create instance of playerInTournament for the specific tournament
     int tournament_id = gameGetTournamentID(game);
     if(!(playerIsPlayingInTournament(player, tournament_id)))
     {
@@ -193,7 +202,7 @@ PlayerResult playerAddGame(Player player, Game game /*int max_games_per_player*/
     PlayerInTournamentResult add_game_result = playerInTournamentAddGame(mapGet(
                                 player->player_in_tournaments, &tournament_id), game);
     
-    
+    // In case if failure, return so
     PlayerResult translated_add_game_result = translatePlayerInTournamentToPlayer(add_game_result);
     if (translated_add_game_result != PLAYER_SUCCESS)
     {
@@ -205,6 +214,40 @@ PlayerResult playerAddGame(Player player, Game game /*int max_games_per_player*/
     return PLAYER_SUCCESS;
 }
 
+PlayerResult playerRemoveLastGame(Player player, Game game)
+{
+    // Verify input
+    if (player == NULL || game == NULL)
+    {
+        return PLAYER_NULL_ARGUMENT;
+    }
+
+    if (!gameisPlayerInGame(game, player->player_id))
+    {
+        return PLAYER_NOT_IN_GAME;
+    }
+
+    int tournament_id = gameGetTournamentID(game);
+    if(!(playerIsPlayingInTournament(player, tournament_id)))
+    {
+        return PLAYER_TOURNAMENT_NOT_EXIST;
+    }
+
+    // Remove the game from the relevant playerInTournament struct
+    PlayerInTournamentResult remove_game_result = playerInTournamentRemoveLastGame(mapGet(
+                                player->player_in_tournaments, &tournament_id), game);
+    
+    // In case if failure, return so
+    PlayerResult translated_remove_game_result = translatePlayerInTournamentToPlayer(remove_game_result);
+    if (translated_remove_game_result != PLAYER_SUCCESS)
+    {
+        return translated_remove_game_result;
+    }
+
+    // Update statistics for player in the case of success
+    playerUpdateStatsForRemovedGame(player, game);
+    return PLAYER_SUCCESS;
+}
 
 int playerGetTotalGames(Player player)
 {
@@ -240,19 +283,17 @@ double playerGetLevel(Player player)
     {
         return PLAYER_INVALID_INPUT;
     }
-    if (player->player_id == 30)
-    {
-        printf("win %d  \ndraw %d  \nloss %d\n", player->total_wins, player->total_draws, player->total_losses);
-    }
+
     int amount_of_games = playerGetTotalGames(player);
     if (amount_of_games == 0)
     {
         return 0;
     }
 
-    double level = (player->total_wins)   *WIN_WEIGHT;
-    level       += (player->total_losses) *LOSS_WEIGHT;
-    level       += (player->total_draws)  *DRAW_WEIGHT;
+    // Calculates level
+    double level = (player->total_wins)   * WIN_WEIGHT;
+    level       += (player->total_losses) * LOSS_WEIGHT;
+    level       += (player->total_draws)  * DRAW_WEIGHT;
     level       /= amount_of_games;
 
     return level;
@@ -299,8 +340,7 @@ int playerGetID(Player player)
 
 bool playerIsPlayingInTournament(Player player, int tournament_id)
 {
-    PlayerInTournament player_in_tournament = getPlayerInTournament(player, tournament_id);
-    return player_in_tournament != NULL ? true : false;
+    return mapContains(player->player_in_tournaments, &tournament_id);
 }
 
 
@@ -329,7 +369,6 @@ bool playerCanPlayMoreGamesInTournament(Player player, int tournament_id)
     }
 
     PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
-    
     return playerInTournamentCanPlayMore(player_in_tournament);
 }
 
@@ -376,13 +415,14 @@ bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, 
         return false;
     }
 
+    // Couldn't find the tournament
     PlayerInTournament player_in_tournament = mapGet(player->player_in_tournaments, &tournament_id);
     if (player_in_tournament == NULL)
     {
         return false;
     }
 
-
+    // Update outcome according to the game's original outcome
     if (outcome_change == DRAW_TO_WIN)
     {
         bool result = playerInTournamentUpdateDrawToWin(player_in_tournament);
@@ -402,7 +442,7 @@ bool playerUpdateResultsAfterOpponentDeletion(Player player, int tournament_id, 
             return false;
         }
         player->total_losses -= 1;
-        player->total_wins  += 1;
+        player->total_wins   += 1;
     }
 
     return true;

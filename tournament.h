@@ -4,7 +4,7 @@
 #define TOURNAMENT_WIN_WEIGHT 2
 #define TOURNAMENT_DRAW_WEIGHT 1
 #define TOURNAMENT_LOSS_WEIGHT 0
-#define TOURNAMENT_INVALID_INPUT -1
+#define TOURNAMENT_INVALID_INPUT -10
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -86,7 +86,6 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
                               GameWinner winner, int play_time, int amount_of_new_players);
 
 
-
 /**
  * tournamentRemovePlayer: removes the player from the tournament.
  *                      In games where the player has participated and not yet ended,
@@ -103,7 +102,6 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
  *     TOURNAMENT_SUCCESS - if player was removed successfully.
  */
 TournamentResult tournamentRemovePlayer(Tournament tournament, int player_id, int game_ids[]);
-
 
 
 /**
@@ -135,7 +133,6 @@ TournamentResult tournamentEnd (Tournament tournament, int winner_id);
 int tournamentGetSizePlayers (Tournament tournament);
 
 
-
 /**
  * tournamentGetSizeGames: The function will return the number of unique games
  *                  in a given tournament
@@ -149,8 +146,6 @@ int tournamentGetSizePlayers (Tournament tournament);
 int tournamentGetSizeGames (Tournament tournament);
 
 
-
-
 /**
  * tournamentGetWinner: The function will return the winner of
  *                     a given tournament
@@ -162,34 +157,6 @@ int tournamentGetSizeGames (Tournament tournament);
  *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
  */
 int tournamentGetWinner(Tournament tournament);
-
-
-/**
- * tournamentGetLocation: The function will return the location of
- *                     a given tournament
- *
- * @param tournament - the tournament
- *
- * @return
- *     The location of the tournament
- *     NULL - if the tournament is NULL
- */
-char* tournamentGetLocation(Tournament tournament);
-
-
-
-/**
- * tournamentGetLongestGameTime: The function will return the longest game time of
- *                     a given tournament
- *
- * @param tournament - the tournament
- *
- * @return
- *     The longest game time of the tournament
- *     TOURNAMENT_INVALID_INPUT - if the input tournament is not valid
- */
-int tournamentGetLongestGameTime(Tournament tournament);
-
 
 
 /**

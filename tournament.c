@@ -7,9 +7,6 @@
 #include "mapUtil.h"
 #include "tournament.h"
 
-//#include "player.h"
-//#include <limits.h>
-
 
 struct tournament_t {
     int tournament_id;
@@ -61,7 +58,7 @@ static bool isSpace(const char *character)
     return *character == ' ';
 }
 
-// Copies a string, returning the copy
+// Copies the location string (if valid), returning the copy
 static char* copyLocation (const char *location)
 {
     // Location is NULL / invalid by the rules we applied
@@ -103,7 +100,7 @@ Tournament tournamentCreate(int tournament_id, int max_games_per_player,
         return NULL;
     }
 
-    // Validating location
+    // Validating location, copy it to the struct
     if (!tournamentValidateLocation(tournament_location))
     {
         return NULL;
@@ -147,6 +144,8 @@ Tournament tournamentCopy(Tournament tournament)
     {
         return NULL;
     }
+
+    // Creating coppied struct
     Tournament new_tournament = tournamentCreate(tournament->tournament_id,
                                 tournament->max_games_per_player, tournament->location);
     if (new_tournament == NULL)
@@ -170,7 +169,6 @@ Tournament tournamentCopy(Tournament tournament)
     new_tournament->longest_game      = tournament->longest_game;
     new_tournament->total_game_time   = tournament->total_game_time;
     new_tournament->winner            = tournament->winner;
-
 
     return new_tournament;
 }
@@ -225,7 +223,6 @@ TournamentResult tournamentAddGame(Tournament tournament, int first_player, int 
     (tournament->current_game_id)++;
     tournament->total_game_time   += play_time;
     tournament->amount_of_players += amount_of_new_players;
-
 
     return TOURNAMENT_SUCCESS;
 }
@@ -285,6 +282,7 @@ TournamentResult tournamentEnd (Tournament tournament, int winner_id)
         
     }
     
+    // Update winner field
     tournament->winner = winner_id;
     return TOURNAMENT_SUCCESS;
 }
@@ -317,26 +315,6 @@ int tournamentGetWinner(Tournament tournament)
         return TOURNAMENT_INVALID_INPUT;
     }
     return tournament->winner;
-}
-
-
-char* tournamentGetLocation(Tournament tournament)
-{
-    if (tournament == NULL)
-    {
-        return NULL;
-    }
-    return tournament->location;
-}
-
-
-int tournamentGetLongestGameTime(Tournament tournament)
-{
-    if (tournament == NULL)
-    {
-        return TOURNAMENT_INVALID_INPUT;
-    }
-    return tournament->longest_game;
 }
 
 

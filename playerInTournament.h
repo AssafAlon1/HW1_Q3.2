@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "game.h"
 
-#define PLAYER_IN_TOURNAMENT_INVALID_INPUT -1
+#define PLAYER_IN_TOURNAMENT_INVALID_INPUT -10
 
 typedef enum {
     PLAYER_IN_TOURNAMENT_OUT_OF_MEMORY,
@@ -62,7 +62,6 @@ PlayerInTournament playerInTournamentCopy(PlayerInTournament player_in_tournamen
  * @param player_in_tournament - the player in tournament that will contain the new game
  * @param game - the game that the player has played in the tournament
  * @return
- *     The coppied player in tournament
  *     PLAYER_IN_TOURNAMENT_NULL_ARGUMENT - if player_in_tournament or game is NULL
        PLAYER_IN_TOURNAMENT_GAME_ALREADY_EXISTS - if there's already a game with the same opponent
        PLAYER_IN_TOURNAMENT_EXCEEDED_GAMES - if the player has reached his max allowed games in the tournament
@@ -193,4 +192,21 @@ bool playerInTournamentUpdateDrawToWin(PlayerInTournament player_in_tournament);
  */
 bool playerInTournamentUpdateLossToWin(PlayerInTournament player_in_tournament);
 
-#endif
+
+
+/**
+ * playerInTournamentRemoveLastGame: Removes the last game played by the player
+ *
+ * @param player_in_tournament - the player in tournament that will contain the game
+ * @param game - the game that the player has played in the tournament
+ * @return
+ *     PLAYER_IN_TOURNAMENT_NULL_ARGUMENT - if player_in_tournament or game is NULL
+       PLAYER_IN_TOURNAMENT_PLAYER_NOT_IN_GAME - if the player is not one of the players in game
+       PLAYER_IN_TOURNAMENT_CONFLICT_ID - if the game id is not the last game played 
+                                          or the tournament ids of player & game don't match 
+       PLAYER_IN_TOURNAMENT_SUCCESS - if the action was performed successfully
+ */
+PlayerInTournamentResult playerInTournamentRemoveLastGame(PlayerInTournament player_in_tournament, Game game);
+
+
+#endif //  _PLAYER_IN_TOURNAMENT_H
