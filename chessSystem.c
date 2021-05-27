@@ -381,7 +381,6 @@ static int ChessTournamentComparePlayerWithWinner (ChessSystem chess, int tourna
     }
 
     *player_score = chessCalculatePlayerScore(chess, player_id, tournament_id);
-
     if (*player_score < winner_score)
     {
         return winner_id;
@@ -407,7 +406,7 @@ static int ChessTournamentComparePlayerWithWinner (ChessSystem chess, int tourna
     {
         return player_id;
     }
-
+    // Both players share the same amount of losses
     int win_compare = playerGetWinsInTournament(winner, tournament_id) -
                         playerGetWinsInTournament(player,tournament_id);
 
@@ -420,7 +419,7 @@ static int ChessTournamentComparePlayerWithWinner (ChessSystem chess, int tourna
     {
         return player_id;
     }
-    
+    // Both players share the same amount of wins
     return winner_id < player_id ? winner_id : player_id;
 }
 
@@ -433,6 +432,7 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
         return INVALID_PLAYER;
     }
 
+    // Initialize variables
     Tournament tournament = mapGet(chess->tournaments, &tournament_id);
     if (tournament == NULL)
     {
@@ -445,6 +445,7 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
         return INVALID_PLAYER;
     }
 
+    // Iterate players, calculating winner
     int winner_id     = *player_iterator;
     int winner_score  = chessCalculatePlayerScore(chess, winner_id, tournament_id);
     while (player_iterator)
@@ -472,6 +473,88 @@ static int ChessTournamentCalculateWinner (ChessSystem chess, int tournament_id)
 
     return winner_id;
 }
+
+
+
+// Given a chess system, 2 arrays and their lengths, the function will get player
+// information (id & level) and write it to the given arrays
+static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_players,
+                                                 int* player_id, double* player_level)
+{
+    if (chess == NULL || player_id == NULL || player_level == NULL)
+    {
+        return CHESS_NULL_ARGUMENT;
+    }
+
+    // Initialize iterator
+    int *player_iterator = mapGetFirst(chess->players);
+    int current_index = 0;
+    while (player_iterator)
+    {
+        // Case - player played no games - doesn't count on the level calculation
+        // Initialize to needed values and move on
+        if (playerGetTotalGames(mapGet(chess->players, player_iterator)) == 0)
+        {
+            player_id[current_index]    = INVALID_PLAYER;
+            player_level[current_index] = PLAYER_PLAYS_NO_GAMES_LVL;
+            free(player_iterator);
+            player_iterator = mapGetNext(chess->players);
+            current_index++;
+            continue;
+        }
+        // Add player id and level to their array and move on
+        player_id[current_index]    = *player_iterator;
+        player_level[current_index] = playerGetLevel(mapGet(chess->players, player_iterator));
+        free(player_iterator);
+        player_iterator             = mapGetNext(chess->players);
+        current_index++;
+    }
+    
+    return CHESS_SUCCESS;
+}
+
+
+// compares two doubles
+static int chessDoubleCompare (double num1, double num2)
+{
+    if (num1 - num2 < 0.00001 && num2 - num1 < 0.00001)
+    {
+        return 0;
+    }
+    if (num1 > num2)
+    {
+        return 1;
+    }
+
+    return -1;
+}
+
+
+// BUBBLE SORT -- update to merge/quick if there's time
+// Sorts 2 arrays, one of them being sorted in a regular fashion, the other one being
+// sorted according to the first one (values from same cells in 2 arrays are linked)
+static void sortLinkedArrays (double referenced_array[], int second_array[], int array_size)
+{
+    for (int i = 0 ; i < array_size ; i++)
+    {
+        for (int j = 0 ; j < array_size - i - 1 ; j++)
+        {
+            // Bubble sort - swap the cells if needed
+            int comparasion = chessDoubleCompare(referenced_array[j], referenced_array[j+1]);
+            if (comparasion < 0 || (comparasion == 0 && second_array[j] > second_array[j+1]))
+            {
+                double temp_double   = referenced_array[j];
+                referenced_array[j]   = referenced_array[j+1];
+                referenced_array[j+1] = temp_double;
+
+                int temp_int = second_array[j];
+                second_array[j]   = second_array[j+1];
+                second_array[j+1] = temp_int;
+            }
+        }
+    }
+}
+
 
 //============================================================//
 //================== INTERNAL FUNCTIONS END ==================//
@@ -621,11 +704,11 @@ ChessResult chessAddGame(ChessSystem chess, int tournament_id, int first_player,
         return CHESS_EXCEEDED_GAMES;
     }
 
-    ChessResult add_game_result = chessAddGameTournamentAndPlayer(tournament,
-                            first_player_struct, second_player_struct,
-                            winner, play_time, amount_of_new_players);
+    // Try to add the game, return the result
+    return chessAddGameTournamentAndPlayer(tournament,
+                        first_player_struct, second_player_struct,
+                        winner, play_time, amount_of_new_players);
 
-    return add_game_result;
 }
 
 
@@ -745,6 +828,7 @@ ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
         return CHESS_NO_GAMES;
     }
     
+    // Calculate the winner, end the tournament and return the result
     int tournament_winner = ChessTournamentCalculateWinner(chess, tournament_id);
     return translateTournamentResultToChessResult(tournamentEnd(tournament, tournament_winner));
 
@@ -752,6 +836,7 @@ ChessResult chessEndTournament (ChessSystem chess, int tournament_id)
 
 double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessResult* chess_result)
 {
+    // Input validation
     if (chess_result == NULL)
     {
         return CHESS_INVALID_INPUT;
@@ -777,91 +862,7 @@ double chessCalculateAveragePlayTime (ChessSystem chess, int player_id, ChessRes
     }
     *chess_result = CHESS_SUCCESS;
     return playerGetFinishedGamesAverageTime(player);
-    
 }
-
-
-// Given a chess system, 2 arrays and their lengths, the function will get player
-// information (id & level) and write it to the given arrays
-static ChessResult buildPlayerIdAndLevelArrays(ChessSystem chess, int amount_of_players,
-                                                 int* player_id, double* player_level)
-{
-    if (chess == NULL || player_id == NULL || player_level == NULL)
-    {
-        return CHESS_NULL_ARGUMENT;
-    }
-
-    int *player_iterator = mapGetFirst(chess->players);
-    int current_index = 0;
-    while (player_iterator)
-    {
-        if (playerGetTotalGames(mapGet(chess->players, player_iterator)) == 0)
-        {
-            player_id[current_index]    = INVALID_PLAYER;
-            player_level[current_index] = PLAYER_PLAYS_NO_GAMES_LVL;
-            free(player_iterator);
-            player_iterator = mapGetNext(chess->players);
-            current_index++;
-            continue;
-        }
-        player_id[current_index]    = *player_iterator;
-        player_level[current_index] = playerGetLevel(mapGet(chess->players, player_iterator));
-        free(player_iterator);
-        player_iterator             = mapGetNext(chess->players);
-        current_index++;
-    }
-    
-    return CHESS_SUCCESS;
-}
-
-
-// compares two doubles
-static int chessDoubleCompare (double num1, double num2)
-{
-    if (num1 - num2 < 0.00001 && num2 - num1 < 0.00001)
-    {
-        return 0;
-    }
-    if (num1 > num2)
-    {
-        return 1;
-    }
-
-    return -1;
-}
-
-
-// Sorts 2 arrays, one of them being sorted in a regular fashion, the other one being
-// sorted according to the first one (values from same cells in 2 arrays are linked)
-static void sortLinkedArrays (double referenced_array[], int second_array[], int array_size)
-{
-    for (int i = 0 ; i < array_size ; i++)
-    {
-        for (int j = 0 ; j < array_size - i - 1 ; j++)
-        {
-            int comparasion = chessDoubleCompare(referenced_array[j], referenced_array[j+1]);
-            if (comparasion < 0 || (comparasion == 0 && second_array[j] > second_array[j+1]))
-            {
-                double temp_double   = referenced_array[j];
-                referenced_array[j]   = referenced_array[j+1];
-                referenced_array[j+1] = temp_double;
-
-                int temp_int = second_array[j];
-                second_array[j]   = second_array[j+1];
-                second_array[j+1] = temp_int;
-            }
-        }
-    }
-}
-
-// static void PrintHelpPlease (double lvl[], int id[], int size)
-// {
-//     for (int i = 0 ; i < size ; i++)
-//     {
-//         printf("ID: %d,  LVL: %.2f\n", id[i], lvl[i]);
-//     }
-//     printf("\n\n");
-// }
 
 ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
 {
@@ -870,6 +871,7 @@ ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
         return CHESS_NULL_ARGUMENT;
     }
     
+    // Initialize arrays for player levels and ids
     int amount_of_players = mapGetSize(chess->players);
     int *player_id_array    = malloc(amount_of_players*sizeof(int));
     if (player_id_array == NULL)
@@ -883,9 +885,11 @@ ChessResult chessSavePlayersLevels (ChessSystem chess, FILE* file)
         return CHESS_OUT_OF_MEMORY;
     }
 
+    // Fill the arrays with values and sort the arrays according to the levels
     buildPlayerIdAndLevelArrays(chess, amount_of_players, player_id_array, player_level_array);
     sortLinkedArrays(player_level_array, player_id_array, amount_of_players);
 
+    // Print the levels to files
     for (int i = 0 ; i < amount_of_players ; i++)
     {
         if (player_id_array[i] < 0)
@@ -914,13 +918,18 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
     {
         return CHESS_NULL_ARGUMENT;
     }
+
+    // Initialize variables
     bool is_tournament_ended = false;
     int *tournament_id_iterator = mapGetFirst(chess->tournaments);
     FILE *output_file = fopen(path_file, "w+");
 
+    // Iteration
     while (tournament_id_iterator != NULL)
     {
         Tournament tournament = mapGet(chess->tournaments, tournament_id_iterator);
+        
+        // Tournament is ongoing
         if (tournamentGetWinner(tournament) == INVALID_PLAYER)
         {
             free(tournament_id_iterator);
@@ -928,8 +937,11 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
             continue;
         }
 
+        // A tournament has ended - print the stats to the file and changes the flag
         is_tournament_ended = true;
         bool print_result = tournamentPrintStatsToFile(tournament, output_file);
+        
+        // In case of errors while writing to file
         if (print_result == false)
         {
             fclose(output_file);
@@ -948,7 +960,3 @@ ChessResult chessSaveTournamentStatistics (ChessSystem chess, char* path_file)
 
     return CHESS_SUCCESS;
 }
-
-
-
-
