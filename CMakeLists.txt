@@ -21,6 +21,8 @@ set(CMAKE_C_FLAGS ${MTM_FLAGS_DEBUG})
 # The executable will be created in the build/ directory
 # If we were compiling multiple files, we could add them separated by spaces,
 # eg add_executable(my_executable hey.c ho.c its.c me.c)
-link_directories(.)
-add_executable(chess main.c chessSystem.c)
-target_link_libraries(chess libmap.a)
+
+# WHEN RELEASING, REMOVE THE MAP.C FROM THE ADD_EXECUTABLE AND UN-COMMENT THE LIBMAP LINES
+#link_directories(.)
+add_executable(chess main.c chessSystem.c tournament.c game.c player.c playerInTournament.c mapUtil.c "./mtm_map/map.c")
+#target_link_libraries(chess libmap.a)

@@ -1,0 +1,24 @@
+2001
+200
+98.46
+Taub
+13
+15
+3002
+200
+138.24
+Taub the second
+21
+26
+4002
+200
+110.00
+Diamond is unbreakable
+11
+13
+5001
+388
+217.20
+Golden wind
+10
+7

@@ -2,11 +2,29 @@
 #define _GAME_H
 
 #include <stdio.h>
-#include "chessSystem.h"
+#include <stdbool.h>
 
+#define INVALID_GAME_ID -1
+#define GAME_INVALID_INPUT -10
+#define INVALID_PLAYER -3
+#define DELETED_PLAYER -2
+
+
+typedef enum {
+    GAME_OUT_OF_MEMORY,
+    GAME_NULL_ARGUMENT,
+    GAME_INVALID_ID,
+    GAME_PLAYER_NOT_EXIST,
+    GAME_SUCCESS
+} GameResult ;
+
+typedef enum {
+    GAME_FIRST_PLAYER,
+    GAME_SECOND_PLAYER,
+    GAME_DRAW
+} GameWinner;
 
 typedef struct game_t *Game;
-
 
 
 /**
@@ -15,14 +33,13 @@ typedef struct game_t *Game;
  * @param tournament_id - the id of the tournament in which the game is being held
  * @param first_player - the id of the first player
  * @param second_player - the id of the second player
- * @param Winner - the winner of the game
+ * @param GameWinner - the winner of the game
  * @param play_time - the length of the game in seconds
  * 
  * @return A new game in case of success, and NULL otherwise (e.g.
  *     in case of an allocation error)
  */
-Game gameCreate(int tournament_id, int first_player, int second_player, Winner winner, int play_time);
-
+Game gameCreate(int tournament_id, int first_player, int second_player, GameWinner winner, int play_time, int game_id);
 
 
 /**
@@ -49,55 +66,43 @@ Game gameCopy(Game game);
 /**
  * gameRemovePlayer: Remove a player from a game, updating the winner if needed
  *
- * @param game - the game that should remove the player
+ * @param game - the game from which we remove the player
  * @param player_id - the player that needs to be removed
  * 
  * @return
- *     CHESS_NULL_ARGUMENT - if game is NULL.
- *     CHESS_INVALID_ID - if the player ID number is invalid.
- *     CHESS_PLAYER_NOT_EXIST - if the player does not play in the game.
- *     CHESS_SUCCESS - if player was removed successfully.
+ *     GAME_NULL_ARGUMENT - if game is NULL.
+ *     GAME_PLAYER_NOT_EXIST - if the player does not play in the game.
+ *     GAME_INVALID_ID - if the player id is invalid
+ *     GAME_SUCCESS - if player was removed successfully.
  */
-ChessResult gameRemovePlayer(Game game, int player_id);
-
-
+GameResult gameRemovePlayer(Game game, int player_id);
 
 
 /**
- * gameGetWinner: Get the winner of a given game
+ * gameGetIdOfWinner: Get the id of the winner of a given game
  *
  * @param game - the game that should return it's winner
  * 
  * @return
  *     The winner of the game
+ *     -1 - if the game is NULL
+ *     INVALID_PLAYER - if the game ended in a tie
  */
-Winner gameGetWinner(Game game);
-
+int gameGetIdOfWinner(Game game);
 
 
 /**
- * gameGetFirstPlayer: Get the first player of a game
+ * gameGetID: Get the ID of a given game
  *
- * @param game - the game that should return the player
+ * @param game - the game
  * 
  * @return
- *     first player of said game
+ *     The ID of the game
+ *     INVALID_GAME_ID - if the game is NULL
  */
-int gameGetFirstPlayer(Game game);
+int gameGetID(Game game);
 
 
-/**
- * gameGetSecondPlayer: Get the second player of a game
- *
- * @param game - the game that should return the player
- * 
- * @return
- *     second player of said game
- */
-int gameGetSecondPlayer(Game game);
-
-
-// gameGetPlayTime
 /**
  * GetPlayTime: Get the length of the game in seconds
  *
@@ -105,6 +110,7 @@ int gameGetSecondPlayer(Game game);
  * 
  * @return
  *     the length of the game in seconds
+ *     GAME_NULL_ARGUMENT - if the game is NULL
  */
 int gameGetPlayTime(Game game);
 
@@ -118,9 +124,36 @@ int gameGetPlayTime(Game game);
  * 
  * @return
  *     true - if the player has played in that game
- *     false - if the player hasn't played in that gmae
+ *     false - if the player hasn't played in that game
  */
 bool gameisPlayerInGame(Game game, int player_id);
 
 
-#endif
+
+/**
+ * gameGetTournamentID: Get the tournament ID of the game
+ *
+ * @param game - the game that should return it's tournament ID
+ * 
+ * @return
+ *     the tournament ID of the game
+ *     -1 - if the game is NULL
+ */
+int gameGetTournamentID(Game game);
+
+
+/**
+ * gameGetPlayersOpponent: Get the ID of a player's opponent in a given game
+ *
+ * @param game - the relevant game
+ * @param player_id - the id of the player that shouldn't be returned
+ * 
+ * @return
+ *     DELETED_PLAYER in the case that the opponent was deleted
+ *     the ID of the opponent otherwise
+ *     -1 - if the game is NULL
+ *     INVALID_PLAYER - if the player did not play in that game
+ */
+int gameGetPlayersOpponent(Game game, int player_id);
+
+#endif // _GAME_H
